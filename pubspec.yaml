@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_riverpod:
   camera:
   path_provider:
   video_player:

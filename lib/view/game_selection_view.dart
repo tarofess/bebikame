@@ -1,14 +1,23 @@
+import 'package:bebikame/main.dart';
+import 'package:bebikame/service/navigation_service.dart';
+import 'package:bebikame/view/game_preview_view.dart';
+import 'package:bebikame/viewmodel/provider/game_type_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GameSelectionView extends StatelessWidget {
-  const GameSelectionView({super.key});
+class GameSelectionView extends ConsumerWidget {
+  final navigationService = getIt<NavigationService>();
+
+  GameSelectionView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gameType = ref.watch(gameTypeProvider);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Game Selection'),
+        title: const Text('ゲームを選んでね！'),
       ),
       body: SafeArea(
         child: Center(
@@ -17,7 +26,7 @@ class GameSelectionView extends StatelessWidget {
             child: GridView.count(
               crossAxisCount: 2,
               childAspectRatio: 1.4,
-              children: List.generate(10, (index) {
+              children: List.generate(gameType.length, (index) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Card(
@@ -26,10 +35,11 @@ class GameSelectionView extends StatelessWidget {
                     ),
                     child: InkWell(
                       onTap: () {
-                        print('アイテム $index がタップされました');
+                        navigationService.push(
+                            context, GamePreviewView(index: index));
                       },
                       child: Center(
-                        child: Text('アイテム $index'),
+                        child: Text(gameType[index]),
                       ),
                     ),
                   ),
