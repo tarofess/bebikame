@@ -1,4 +1,4 @@
-import 'package:bebikame/game_selection_view.dart';
+import 'package:bebikame/view/game_selection_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
