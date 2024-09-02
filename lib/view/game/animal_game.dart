@@ -5,6 +5,13 @@ class AnimalGame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text('動物ゲーム');
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: Image.asset('assets/images/bg_animal.jpg').image,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
   }
 }

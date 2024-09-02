@@ -18,6 +18,12 @@ class GameSelectionView extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('ゲームを選んでね！'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: SafeArea(
         child: Center(

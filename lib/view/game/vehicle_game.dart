@@ -5,6 +5,14 @@ class VehicleGame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text('乗り物ゲーム');
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: Image.asset('assets/images/bg_vehicle.jpg').image,
+          fit: BoxFit.cover,
+          alignment: const Alignment(1.0, 1.0),
+        ),
+      ),
+    );
   }
 }

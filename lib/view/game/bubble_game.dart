@@ -5,6 +5,14 @@ class BubbleGame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text('あわあわゲーム');
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: Image.asset('assets/images/bg_bubble.jpg').image,
+          fit: BoxFit.cover,
+          alignment: const Alignment(-1.0, -1.0),
+        ),
+      ),
+    );
   }
 }

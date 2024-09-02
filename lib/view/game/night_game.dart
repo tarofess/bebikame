@@ -5,6 +5,14 @@ class NightGame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text('夜空ゲーム');
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: Image.asset('assets/images/bg_night.jpg').image,
+          fit: BoxFit.cover,
+          alignment: const Alignment(-1.0, -1.0),
+        ),
+      ),
+    );
   }
 }

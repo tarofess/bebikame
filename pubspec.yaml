@@ -69,7 +69,12 @@ flutter:
   assets:
     - assets/icon/icon_ios.png
     - assets/icon/icon_android.png
-  #   - images/a_dot_ham.jpeg
+    - assets/images/bg_animal.jpg
+    - assets/images/bg_bubble.jpg
+    - assets/images/bg_fireworks.jpg
+    - assets/images/bg_vehicle.jpg
+    - assets/images/bg_music.jpg
+    - assets/images/bg_night.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

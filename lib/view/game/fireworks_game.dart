@@ -5,6 +5,14 @@ class FireworksGame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text('花火ゲーム');
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: Image.asset('assets/images/bg_fireworks.jpg').image,
+          fit: BoxFit.cover,
+          alignment: const Alignment(-1.0, -1.0),
+        ),
+      ),
+    );
   }
 }
