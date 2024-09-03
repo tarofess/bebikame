@@ -19,10 +19,10 @@ class GameView extends ConsumerWidget {
       body: switch (index) {
         0 => const AnimalGame(),
         1 => const VehicleGame(),
-        2 => const MusicGame(),
-        3 => const NightGame(),
-        4 => const BubbleGame(),
-        5 => const FireworksGame(),
+        2 => const NightGame(),
+        3 => const BubbleGame(),
+        4 => const FireworksGame(),
+        5 => const MusicGame(),
         _ => const Text('なし'),
       },
     );
