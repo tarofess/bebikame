@@ -2,8 +2,9 @@ import 'package:bebikame/main.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/view/game_preview_view.dart';
 import 'package:bebikame/viewmodel/provider/game_type_provider.dart';
+import 'package:bebikame/viewmodel/provider/selected_game_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameSelectionView extends ConsumerWidget {
   final navigationService = getIt<NavigationService>();
@@ -41,8 +42,8 @@ class GameSelectionView extends ConsumerWidget {
                     ),
                     child: InkWell(
                       onTap: () {
-                        navigationService.push(
-                            context, GamePreviewView(index: index));
+                        ref.read(selectedGameProvider.notifier).state = index;
+                        navigationService.push(context, GamePreviewView());
                       },
                       child: Center(
                         child: Text(gameType[index]),
