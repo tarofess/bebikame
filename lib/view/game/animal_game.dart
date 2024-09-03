@@ -8,7 +8,7 @@ class AnimalGame extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: Image.asset('assets/images/bg_animal.jpg').image,
+          image: Image.asset('assets/images/animal/bg_animal.jpg').image,
           fit: BoxFit.cover,
         ),
       ),

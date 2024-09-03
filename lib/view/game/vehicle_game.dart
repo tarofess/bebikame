@@ -8,7 +8,7 @@ class VehicleGame extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: Image.asset('assets/images/bg_vehicle.jpg').image,
+          image: Image.asset('assets/images/vehicle/bg_vehicle.jpg').image,
           fit: BoxFit.cover,
           alignment: const Alignment(1.0, 1.0),
         ),

@@ -8,7 +8,7 @@ class MusicGame extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: Image.asset('assets/images/bg_music.jpg').image,
+          image: Image.asset('assets/images/music/bg_music.jpg').image,
           fit: BoxFit.cover,
           alignment: const Alignment(1.0, 1.0),
         ),

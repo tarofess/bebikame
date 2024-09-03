@@ -69,12 +69,31 @@ flutter:
   assets:
     - assets/icon/icon_ios.png
     - assets/icon/icon_android.png
-    - assets/images/bg_animal.jpg
-    - assets/images/bg_bubble.jpg
-    - assets/images/bg_fireworks.jpg
-    - assets/images/bg_vehicle.jpg
-    - assets/images/bg_music.jpg
-    - assets/images/bg_night.jpg
+    - assets/images/animal/bg_animal.jpg
+    - assets/images/animal/cat.png
+    - assets/images/animal/chicken.png
+    - assets/images/animal/dog.png
+    - assets/images/animal/elephant.png
+    - assets/images/animal/goat.png
+    - assets/images/bubble/bg_bubble.jpg
+    - assets/images/bubble/bubble.png
+    - assets/images/fireworks/bg_fireworks.jpg
+    - assets/images/music/bg_music.jpg
+    - assets/images/music/acoustic.png
+    - assets/images/music/guitar.png
+    - assets/images/music/piano.png
+    - assets/images/music/snare.png
+    - assets/images/music/violin.png
+    - assets/images/night/bg_night.jpg
+    - assets/images/night/moon.png
+    - assets/images/night/star_smile.png
+    - assets/images/night/star.png
+    - assets/images/vehicle/bg_vehicle.jpg
+    - assets/images/vehicle/ambulance.png
+    - assets/images/vehicle/bicycle.png
+    - assets/images/vehicle/car.png
+    - assets/images/vehicle/motorcycle.png
+    - assets/images/vehicle/patrolcar.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
