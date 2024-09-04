@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AnimalGame extends HookWidget {
   const AnimalGame({super.key});
@@ -21,98 +22,59 @@ class AnimalGame extends HookWidget {
 
     return Stack(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: Image.asset('assets/images/animal/bg_animal.jpg').image,
-              fit: BoxFit.cover,
-            ),
+        Positioned.fill(
+          child: Image.asset(
+            'assets/images/animal/bg_animal.jpg',
+            fit: BoxFit.cover,
           ),
         ),
-        // 中央
-        Center(
-          child: GestureDetector(
-            onTap: () => animateScale(catScale),
-            child: AnimatedScale(
-              scale: catScale.value,
-              duration: const Duration(milliseconds: 200),
-              child: Image.asset(
-                'assets/images/animal/cat.png',
-                width: 100,
-                height: 100,
+        SafeArea(
+          child: Stack(
+            children: [
+              Center(
+                child: buildAnimalImage('cat', catScale, animateScale),
               ),
-            ),
-          ),
-        ),
-        // 左上
-        Positioned(
-          top: 20,
-          left: 100,
-          child: GestureDetector(
-            onTap: () => animateScale(chickenScale),
-            child: AnimatedScale(
-              scale: chickenScale.value,
-              duration: const Duration(milliseconds: 200),
-              child: Image.asset(
-                'assets/images/animal/chicken.png',
-                width: 100,
-                height: 100,
+              Positioned(
+                top: 20.r,
+                left: 20.r,
+                child: buildAnimalImage('chicken', chickenScale, animateScale),
               ),
-            ),
-          ),
-        ),
-        // 右上
-        Positioned(
-          top: 20,
-          right: 100,
-          child: GestureDetector(
-            onTap: () => animateScale(goatScale),
-            child: AnimatedScale(
-              scale: goatScale.value,
-              duration: const Duration(milliseconds: 200),
-              child: Image.asset(
-                'assets/images/animal/goat.png',
-                width: 100,
-                height: 100,
+              Positioned(
+                top: 20.r,
+                right: 20.r,
+                child: buildAnimalImage('goat', goatScale, animateScale),
               ),
-            ),
-          ),
-        ),
-        // 左下
-        Positioned(
-          bottom: 20,
-          left: 100,
-          child: GestureDetector(
-            onTap: () => animateScale(elephantScale),
-            child: AnimatedScale(
-              scale: elephantScale.value,
-              duration: const Duration(milliseconds: 200),
-              child: Image.asset(
-                'assets/images/animal/elephant.png',
-                width: 100,
-                height: 100,
+              Positioned(
+                bottom: 20.r,
+                left: 20.r,
+                child: buildAnimalImage('dog', dogScale, animateScale),
               ),
-            ),
-          ),
-        ),
-        // 右下
-        Positioned(
-          bottom: 20,
-          right: 100,
-          child: GestureDetector(
-            onTap: () => animateScale(dogScale),
-            child: AnimatedScale(
-              scale: dogScale.value,
-              duration: const Duration(milliseconds: 200),
-              child: Image.asset(
-                'assets/images/animal/dog.png',
-                width: 100,
-                height: 100,
+              Positioned(
+                bottom: 20.r,
+                right: 20.r,
+                child:
+                    buildAnimalImage('elephant', elephantScale, animateScale),
               ),
-            ),
+            ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget buildAnimalImage(String fileName, ValueNotifier<double> scale,
+      Function(ValueNotifier<double>) animateScale) {
+    return GestureDetector(
+      onTap: () => animateScale(scale),
+      child: AnimatedScale(
+        scale: scale.value,
+        duration: const Duration(milliseconds: 200),
+        child: Image.asset(
+          'assets/images/animal/$fileName.png',
+          width: 120.r,
+          height: 120.r,
+        ),
+      ),
     );
   }
 }
