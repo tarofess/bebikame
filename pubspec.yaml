@@ -195,6 +195,7 @@ flutter:
     - assets/images/vehicle/patrolcar.png
 
     - assets/sounds/bubble/bubble.mp3
+    - assets/sounds/fireworks/fireworks.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

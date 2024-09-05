@@ -1,8 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
 
 class FireworksGame extends HookWidget {
   const FireworksGame({super.key});
@@ -10,6 +10,18 @@ class FireworksGame extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final fireworks = useState<List<Firework>>([]);
+    final audioPlayer = useMemoized(() => AudioPlayer());
+
+    useEffect(() {
+      return () {
+        audioPlayer.dispose();
+      };
+    }, []);
+
+    Future<void> playSound() async {
+      await audioPlayer.stop();
+      await audioPlayer.play(AssetSource('sounds/fireworks/fireworks.mp3'));
+    }
 
     return GestureDetector(
       onTapDown: (TapDownDetails details) {
@@ -17,6 +29,7 @@ class FireworksGame extends HookWidget {
           ...fireworks.value,
           Firework(details.globalPosition),
         ];
+        playSound();
       },
       child: Stack(
         children: [
