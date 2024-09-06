@@ -1,6 +1,7 @@
+import 'package:bebikame/app_lifecycle_observer.dart';
+import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/view/game_selection_view.dart';
-import 'package:bebikame/viewmodel/provider/bgm_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -17,7 +18,7 @@ void main() {
     DeviceOrientation.landscapeRight,
   ]).then((_) {
     setupGetIt();
-    runApp(const ProviderScope(child: MyApp()));
+    runApp(ProviderScope(child: MyApp()));
   });
   FlutterNativeSplash.remove();
 }
@@ -25,23 +26,24 @@ void main() {
 final getIt = GetIt.instance;
 void setupGetIt() {
   getIt.registerLazySingleton(() => NavigationService());
+  getIt.registerLazySingleton(() => AudioService());
 }
 
 class MyApp extends HookConsumerWidget {
-  const MyApp({super.key});
+  final audioService = getIt<AudioService>();
+
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bgmManager = ref.watch(bgmManagerProvider);
-
     useEffect(() {
-      final observer = _AppLifecycleObserver(bgmManager);
+      final observer = AppLifecycleObserver(audioService);
       WidgetsBinding.instance.addObserver(observer);
-      bgmManager.play();
+      audioService.play('bgm', loop: true, volume: 0.3);
 
       return () {
         WidgetsBinding.instance.removeObserver(observer);
-        bgmManager.stop();
+        audioService.stop('bgm');
       };
     }, []);
 
@@ -59,21 +61,5 @@ class MyApp extends HookConsumerWidget {
         );
       },
     );
-  }
-}
-
-class _AppLifecycleObserver extends WidgetsBindingObserver {
-  final BgmManager _bgmManager;
-
-  _AppLifecycleObserver(this._bgmManager);
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.detached) {
-      _bgmManager.pauseIfPlaying();
-    } else if (state == AppLifecycleState.resumed) {
-      _bgmManager.resumeIfPaused();
-    }
   }
 }
