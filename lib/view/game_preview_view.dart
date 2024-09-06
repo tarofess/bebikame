@@ -7,7 +7,7 @@ import 'package:bebikame/view/game/music_game.dart';
 import 'package:bebikame/view/game/night_game.dart';
 import 'package:bebikame/view/game/vehicle_game.dart';
 import 'package:bebikame/view/game_view.dart';
-import 'package:bebikame/viewmodel/provider/game_type_provider.dart';
+import 'package:bebikame/viewmodel/provider/game_provider.dart';
 import 'package:bebikame/viewmodel/provider/selected_game_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -19,13 +19,13 @@ class GamePreviewView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final gameType = ref.watch(gameTypeProvider);
+    final gameType = ref.watch(gameProvider);
     final index = ref.watch(selectedGameProvider);
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(gameType[index]),
+        title: Text(gameType[index]['name']!),
         actions: [
           IconButton(
             icon: const Icon(Icons.check_circle),
@@ -39,8 +39,8 @@ class GamePreviewView extends ConsumerWidget {
         child: switch (index) {
           0 => const AnimalGame(),
           1 => const VehicleGame(),
-          2 => const NightGame(),
-          3 => const BubbleGame(),
+          2 => const BubbleGame(),
+          3 => const NightGame(),
           4 => const FireworksGame(),
           5 => const MusicGame(),
           _ => const Text('なし'),
