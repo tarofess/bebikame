@@ -50,7 +50,7 @@ class MusicGame extends HookWidget {
         Positioned(
           bottom: 20.r,
           left: 120.r,
-          child: buildMusicImage('snare', snareScale, animateScale),
+          child: buildMusicImage('drum', snareScale, animateScale),
         ),
         Positioned(
           bottom: 0.r,

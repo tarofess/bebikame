@@ -181,7 +181,7 @@ flutter:
     - assets/images/music/acoustic.png
     - assets/images/music/guitar.png
     - assets/images/music/piano.png
-    - assets/images/music/snare.png
+    - assets/images/music/drum.png
     - assets/images/music/violin.png
     - assets/images/night/bg_night.jpg
     - assets/images/night/moon.png
@@ -196,6 +196,24 @@ flutter:
 
     - assets/sounds/bubble/bubble.mp3
     - assets/sounds/fireworks/fireworks.mp3
+    - assets/sounds/night/moon.mp3
+    - assets/sounds/night/star.mp3
+    - assets/sounds/night/star_smile.mp3
+    - assets/sounds/animal/cat.mp3
+    - assets/sounds/animal/dog.mp3
+    - assets/sounds/animal/chicken.mp3
+    - assets/sounds/animal/elephant.mp3
+    - assets/sounds/animal/goat.mp3
+    - assets/sounds/music/acoustic.mp3
+    - assets/sounds/music/guitar.mp3
+    - assets/sounds/music/piano.mp3
+    - assets/sounds/music/violin.mp3
+    - assets/sounds/music/drum.mp3
+    - assets/sounds/vehicle/car.mp3
+    - assets/sounds/vehicle/ambulance.mp3
+    - assets/sounds/vehicle/bicycle.mp3
+    - assets/sounds/vehicle/motorcycle.mp3
+    - assets/sounds/vehicle/patrolcar.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
