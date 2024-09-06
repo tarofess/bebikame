@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class NightGame extends HookWidget {
   const NightGame({super.key});
@@ -11,12 +12,24 @@ class NightGame extends HookWidget {
     final starScale1 = useState(1.0);
     final starScale2 = useState(1.0);
     final starSmileScale = useState(1.0);
+    final audioPlayer = useMemoized(() => AudioPlayer());
+    final moonAudioPlayer = useMemoized(() => AudioPlayer());
 
     void animateScale(ValueNotifier<double> scale) {
       scale.value = 1.2;
       Future.delayed(const Duration(milliseconds: 200), () {
         scale.value = 1.0;
       });
+    }
+
+    void playSound(String soundFile) {
+      audioPlayer.stop().then((_) {
+        audioPlayer.play(AssetSource(soundFile));
+      });
+    }
+
+    void playMoonSound(String soundFile) {
+      moonAudioPlayer.play(AssetSource(soundFile));
     }
 
     return Stack(children: [
@@ -32,28 +45,32 @@ class NightGame extends HookWidget {
       Positioned(
         top: 10.r,
         right: 60.r,
-        child: buildNightImageSlow('moon', moonScale, animateScale),
+        child: buildMoonImage('moon', moonScale, animateScale, playMoonSound),
       ),
       Positioned(
         bottom: 10.r,
         right: 140.r,
-        child: buildNightImageReverse('star', starScale1, animateScale),
+        child: buildStarImage('star', starScale1, animateScale, playSound),
       ),
       Positioned(
         top: 10.r,
         left: 80.r,
-        child: buildNightImage('star', starScale2, animateScale),
+        child: buildStarImage('star', starScale2, animateScale, playSound),
       ),
       Positioned(
         bottom: 50.r,
         left: 220.r,
-        child: buildNightImage('star_smile', starSmileScale, animateScale),
+        child: buildStarImage(
+            'star_smile', starSmileScale, animateScale, playSound),
       ),
     ]);
   }
 
-  Widget buildNightImage(String fileName, ValueNotifier<double> scale,
-      Function(ValueNotifier<double>) animateScale) {
+  Widget buildStarImage(
+      String fileName,
+      ValueNotifier<double> scale,
+      Function(ValueNotifier<double>) animateScale,
+      Function(String) playSound) {
     final rotationController = useAnimationController(
       duration: const Duration(milliseconds: 500),
     );
@@ -62,6 +79,7 @@ class NightGame extends HookWidget {
       onTap: () {
         animateScale(scale);
         rotationController.forward(from: 0);
+        playSound('sounds/night/$fileName.mp3');
       },
       child: AnimatedScale(
         scale: scale.value,
@@ -78,45 +96,26 @@ class NightGame extends HookWidget {
     );
   }
 
-  Widget buildNightImageReverse(String fileName, ValueNotifier<double> scale,
-      Function(ValueNotifier<double>) animateScale) {
+  Widget buildMoonImage(
+      String fileName,
+      ValueNotifier<double> scale,
+      Function(ValueNotifier<double>) animateScale,
+      Function(String) playSound) {
     final rotationController = useAnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 2200),
     );
+    final isAnimating = useState(false);
 
     return GestureDetector(
       onTap: () {
-        animateScale(scale);
-        rotationController.forward(from: 0);
-      },
-      child: AnimatedScale(
-        scale: scale.value,
-        duration: const Duration(milliseconds: 1000),
-        child: Transform.rotate(
-          angle: -0.3,
-          child: RotationTransition(
-            turns: Tween(begin: 0.0, end: -1.0).animate(rotationController),
-            child: Image.asset(
-              'assets/images/night/$fileName.png',
-              width: 120.r,
-              height: 120.r,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildNightImageSlow(String fileName, ValueNotifier<double> scale,
-      Function(ValueNotifier<double>) animateScale) {
-    final rotationController = useAnimationController(
-      duration: const Duration(seconds: 2),
-    );
-
-    return GestureDetector(
-      onTap: () {
-        animateScale(scale);
-        rotationController.forward(from: 0);
+        if (!isAnimating.value) {
+          isAnimating.value = true;
+          animateScale(scale);
+          playSound('sounds/night/moon.mp3');
+          rotationController.forward(from: 0).then((_) {
+            isAnimating.value = false;
+          });
+        }
       },
       child: AnimatedScale(
         scale: scale.value,
