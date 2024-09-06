@@ -1,13 +1,12 @@
 import 'package:bebikame/app_lifecycle_observer.dart';
+import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/view/game_selection_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get_it/get_it.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
@@ -21,12 +20,6 @@ void main() {
     runApp(ProviderScope(child: MyApp()));
   });
   FlutterNativeSplash.remove();
-}
-
-final getIt = GetIt.instance;
-void setupGetIt() {
-  getIt.registerLazySingleton(() => NavigationService());
-  getIt.registerLazySingleton(() => AudioService());
 }
 
 class MyApp extends HookConsumerWidget {

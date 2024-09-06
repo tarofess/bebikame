@@ -1,4 +1,4 @@
-import 'package:bebikame/main.dart';
+import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/view/game/animal_game.dart';
 import 'package:bebikame/view/game/bubble_game.dart';
