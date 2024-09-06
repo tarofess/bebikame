@@ -1,6 +1,6 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/view/game_selection_view.dart';
+import 'package:bebikame/viewmodel/provider/bgm_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -22,22 +22,26 @@ void main() {
   FlutterNativeSplash.remove();
 }
 
-class MyApp extends HookWidget {
+final getIt = GetIt.instance;
+void setupGetIt() {
+  getIt.registerLazySingleton(() => NavigationService());
+}
+
+class MyApp extends HookConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final audioPlayer = useMemoized(() => AudioPlayer(), []);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bgmManager = ref.watch(bgmManagerProvider);
 
     useEffect(() {
-      audioPlayer.setReleaseMode(ReleaseMode.loop);
-      audioPlayer.setPlayerMode(PlayerMode.lowLatency);
-      audioPlayer.setSource(AssetSource('sounds/bgm.mp3'));
-      audioPlayer.setVolume(0.5);
-      audioPlayer.resume();
+      final observer = _AppLifecycleObserver(bgmManager);
+      WidgetsBinding.instance.addObserver(observer);
+      bgmManager.play();
 
       return () {
-        audioPlayer.dispose();
+        WidgetsBinding.instance.removeObserver(observer);
+        bgmManager.stop();
       };
     }, []);
 
@@ -58,7 +62,18 @@ class MyApp extends HookWidget {
   }
 }
 
-final getIt = GetIt.instance;
-void setupGetIt() {
-  getIt.registerLazySingleton(() => NavigationService());
+class _AppLifecycleObserver extends WidgetsBindingObserver {
+  final BgmManager _bgmManager;
+
+  _AppLifecycleObserver(this._bgmManager);
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      _bgmManager.pauseIfPlaying();
+    } else if (state == AppLifecycleState.resumed) {
+      _bgmManager.resumeIfPaused();
+    }
+  }
 }
