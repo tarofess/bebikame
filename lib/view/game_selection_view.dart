@@ -1,4 +1,5 @@
 import 'package:bebikame/get_it.dart';
+import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/view/game_preview_view.dart';
 import 'package:bebikame/viewmodel/provider/game_provider.dart';
@@ -8,6 +9,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameSelectionView extends ConsumerWidget {
   final navigationService = getIt<NavigationService>();
+  final audioService = getIt<AudioService>();
 
   GameSelectionView({super.key});
 
@@ -46,6 +48,7 @@ class GameSelectionView extends ConsumerWidget {
                   ),
                   child: InkWell(
                     onTap: () {
+                      audioService.play('button_tap');
                       ref.read(selectedGameProvider.notifier).state = index;
                       navigationService.push(context, GamePreviewView());
                     },

@@ -215,6 +215,7 @@ flutter:
     - assets/sounds/vehicle/motorcycle.mp3
     - assets/sounds/vehicle/patrolcar.mp3
     - assets/sounds/bgm.mp3
+    - assets/sounds/button_tap.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
