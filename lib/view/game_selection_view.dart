@@ -56,7 +56,7 @@ class GameSelectionView extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(16),
                       child: Image.asset(
                         game[index]['image']!,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.fill,
                       ),
                     ),
                   ),
