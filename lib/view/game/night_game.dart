@@ -1,7 +1,7 @@
+import 'package:bebikame/service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 class NightGame extends HookWidget {
   const NightGame({super.key});
@@ -12,8 +12,8 @@ class NightGame extends HookWidget {
     final starScale1 = useState(1.0);
     final starScale2 = useState(1.0);
     final starSmileScale = useState(1.0);
-    final audioPlayer = useMemoized(() => AudioPlayer());
-    final moonAudioPlayer = useMemoized(() => AudioPlayer());
+    final audioService = useMemoized(() => AudioService(), []);
+    final moonAudioService = useMemoized(() => AudioService(), []);
 
     void animateScale(ValueNotifier<double> scale) {
       scale.value = 1.2;
@@ -22,14 +22,13 @@ class NightGame extends HookWidget {
       });
     }
 
-    void playSound(String soundFile) {
-      audioPlayer.stop().then((_) {
-        audioPlayer.play(AssetSource(soundFile));
-      });
+    void playSound(String fileName) async {
+      await audioService.stop('night/$fileName');
+      await audioService.play('night/$fileName');
     }
 
-    void playMoonSound(String soundFile) {
-      moonAudioPlayer.play(AssetSource(soundFile));
+    void playMoonSound(String fileName) {
+      moonAudioService.play('night/$fileName');
     }
 
     return Stack(children: [
@@ -67,19 +66,19 @@ class NightGame extends HookWidget {
   }
 
   Widget buildStarImage(
-      String fileName,
-      ValueNotifier<double> scale,
-      Function(ValueNotifier<double>) animateScale,
-      Function(String) playSound) {
-    final rotationController = useAnimationController(
-      duration: const Duration(milliseconds: 500),
-    );
+    String fileName,
+    ValueNotifier<double> scale,
+    Function(ValueNotifier<double>) animateScale,
+    Function(String) playSound,
+  ) {
+    final rotationController =
+        useAnimationController(duration: const Duration(milliseconds: 500));
 
     return GestureDetector(
       onTap: () {
         animateScale(scale);
         rotationController.forward(from: 0);
-        playSound('sounds/night/$fileName.mp3');
+        playSound(fileName);
       },
       child: AnimatedScale(
         scale: scale.value,
@@ -111,7 +110,7 @@ class NightGame extends HookWidget {
         if (!isAnimating.value) {
           isAnimating.value = true;
           animateScale(scale);
-          playSound('sounds/night/moon.mp3');
+          playSound(fileName);
           rotationController.forward(from: 0).then((_) {
             isAnimating.value = false;
           });

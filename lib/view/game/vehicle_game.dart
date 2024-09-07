@@ -1,7 +1,7 @@
+import 'package:bebikame/service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 class VehicleGame extends HookWidget {
   const VehicleGame({super.key});
@@ -13,31 +13,15 @@ class VehicleGame extends HookWidget {
     final carPosition = useState(Alignment.centerRight);
     final motorcyclePosition = useState(Alignment.topRight);
     final patrolcarPosition = useState(Alignment.bottomRight);
-
     final isAnimating = useState<Set<String>>({});
-    final audioPlayers = useMemoized(() => {
-          'car': AudioPlayer(),
-          'ambulance': AudioPlayer(),
-          'bicycle': AudioPlayer(),
-          'motorcycle': AudioPlayer(),
-          'patrolcar': AudioPlayer(),
-        });
+    final audioService = useMemoized(() => AudioService(), []);
 
-    useEffect(() {
-      return () {
-        for (var player in audioPlayers.values) {
-          player.dispose();
-        }
-      };
-    }, []);
-
-    void playSound(String vehicleName) {
-      audioPlayers[vehicleName]
-          ?.play(AssetSource('sounds/vehicle/$vehicleName.mp3'));
+    void playSound(String fileName) async {
+      await audioService.play('vehicle/$fileName');
     }
 
-    void stopSound(String vehicleName) {
-      audioPlayers[vehicleName]?.stop();
+    void stopSound(String fileName) async {
+      await audioService.stop('vehicle/$fileName');
     }
 
     void animatePosition(ValueNotifier<Alignment> position, Alignment target,

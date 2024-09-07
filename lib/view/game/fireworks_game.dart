@@ -1,8 +1,8 @@
 import 'dart:async';
+import 'package:bebikame/service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'dart:math';
-import 'package:audioplayers/audioplayers.dart';
 
 class FireworksGame extends HookWidget {
   const FireworksGame({super.key});
@@ -10,17 +10,11 @@ class FireworksGame extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final fireworks = useState<List<Firework>>([]);
-    final audioPlayer = useMemoized(() => AudioPlayer());
-
-    useEffect(() {
-      return () {
-        audioPlayer.dispose();
-      };
-    }, []);
+    final audioService = useMemoized(() => AudioService(), []);
 
     Future<void> playSound() async {
-      await audioPlayer.stop();
-      await audioPlayer.play(AssetSource('sounds/fireworks/fireworks.mp3'));
+      await audioService.stop('fireworks/fireworks');
+      await audioService.play('fireworks/fireworks');
     }
 
     return GestureDetector(

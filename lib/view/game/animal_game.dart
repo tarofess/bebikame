@@ -1,7 +1,7 @@
+import 'package:bebikame/service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 class AnimalGame extends HookWidget {
   const AnimalGame({super.key});
@@ -13,24 +13,7 @@ class AnimalGame extends HookWidget {
     final goatScale = useState(1.0);
     final elephantScale = useState(1.0);
     final dogScale = useState(1.0);
-
-    final audioPlayers = useMemoized(
-        () => {
-              'cat': AudioPlayer(),
-              'chicken': AudioPlayer(),
-              'goat': AudioPlayer(),
-              'dog': AudioPlayer(),
-              'elephant': AudioPlayer(),
-            },
-        []);
-
-    useEffect(() {
-      return () {
-        for (var player in audioPlayers.values) {
-          player.dispose();
-        }
-      };
-    }, []);
+    final audioService = useMemoized(() => AudioService(), []);
 
     void animateScale(ValueNotifier<double> scale) {
       scale.value = 1.5;
@@ -39,10 +22,9 @@ class AnimalGame extends HookWidget {
       });
     }
 
-    Future<void> playSound(String animalName) async {
-      final player = audioPlayers[animalName]!;
-      await player.stop();
-      await player.play(AssetSource('sounds/animal/$animalName.mp3'));
+    Future<void> playSound(String fileName) async {
+      await audioService.stop('animal/$fileName');
+      await audioService.play('animal/$fileName');
     }
 
     return Stack(

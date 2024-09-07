@@ -1,7 +1,7 @@
+import 'package:bebikame/service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 class MusicGame extends HookWidget {
   const MusicGame({super.key});
@@ -13,25 +13,25 @@ class MusicGame extends HookWidget {
     final acousticScale = useState(1.0);
     final drumScale = useState(1.0);
     final guitarScale = useState(1.0);
+    final pianoTappable = useState(true);
+    final violinTappable = useState(true);
+    final acousticTappable = useState(true);
+    final drumTappable = useState(true);
+    final guitarTappable = useState(true);
+    final audioService = useMemoized(() => AudioService(), []);
 
-    final audioPlayers = useMemoized(() => {
-          'piano': AudioPlayer(),
-          'violin': AudioPlayer(),
-          'acoustic': AudioPlayer(),
-          'drum': AudioPlayer(),
-          'guitar': AudioPlayer(),
-        });
-
-    void animateScale(ValueNotifier<double> scale, int durationMs) {
+    void animateScale(ValueNotifier<double> scale, ValueNotifier<bool> tappable,
+        int durationMs) {
       scale.value = 1.5;
+      tappable.value = false;
       Future.delayed(Duration(milliseconds: durationMs), () {
         scale.value = 1.0;
+        tappable.value = true;
       });
     }
 
-    void playSound(String instrument) async {
-      final player = audioPlayers[instrument]!;
-      await player.play(AssetSource('sounds/music/$instrument.mp3'));
+    void playSound(String fileName) async {
+      await audioService.play('music/$fileName');
     }
 
     return Stack(
@@ -54,7 +54,8 @@ class MusicGame extends HookWidget {
             pianoScale,
             animateScale,
             playSound,
-            3400,
+            3800,
+            pianoTappable,
           ),
         ),
         Positioned(
@@ -65,7 +66,8 @@ class MusicGame extends HookWidget {
             violinScale,
             animateScale,
             playSound,
-            4000,
+            4100,
+            violinTappable,
           ),
         ),
         Positioned(
@@ -76,7 +78,8 @@ class MusicGame extends HookWidget {
             acousticScale,
             animateScale,
             playSound,
-            2800,
+            5000,
+            acousticTappable,
           ),
         ),
         Positioned(
@@ -87,7 +90,8 @@ class MusicGame extends HookWidget {
             drumScale,
             animateScale,
             playSound,
-            4000,
+            4700,
+            drumTappable,
           ),
         ),
         Positioned(
@@ -98,7 +102,8 @@ class MusicGame extends HookWidget {
             guitarScale,
             animateScale,
             playSound,
-            2000,
+            2800,
+            guitarTappable,
           ),
         ),
       ],
@@ -108,15 +113,18 @@ class MusicGame extends HookWidget {
   Widget buildMusicImage(
     String fileName,
     ValueNotifier<double> scale,
-    Function(ValueNotifier<double>, int) animateScale,
+    Function(ValueNotifier<double>, ValueNotifier<bool>, int) animateScale,
     Function(String) playSound,
     int durationMs,
+    ValueNotifier<bool> tappable,
   ) {
     return GestureDetector(
-      onTap: () {
-        animateScale(scale, durationMs);
-        playSound(fileName);
-      },
+      onTap: tappable.value
+          ? () {
+              animateScale(scale, tappable, durationMs);
+              playSound(fileName);
+            }
+          : null,
       child: AnimatedScale(
         scale: scale.value,
         duration: const Duration(milliseconds: 200),

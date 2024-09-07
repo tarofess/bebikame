@@ -1,7 +1,7 @@
+import 'package:bebikame/service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 class BubbleGame extends HookWidget {
   const BubbleGame({super.key});
@@ -10,17 +10,11 @@ class BubbleGame extends HookWidget {
   Widget build(BuildContext context) {
     final bubbleVisibilities = List.generate(7, (_) => useState(true));
     final bubbleInteractable = List.generate(7, (_) => useState(true));
-    final audioPlayer = useMemoized(() => AudioPlayer());
-
-    useEffect(() {
-      return () {
-        audioPlayer.dispose();
-      };
-    }, []);
+    final audioService = useMemoized(() => AudioService(), []);
 
     Future<void> playSound() async {
-      await audioPlayer.stop();
-      await audioPlayer.play(AssetSource('sounds/bubble/bubble.mp3'));
+      await audioService.stop('bubble/bubble');
+      await audioService.play('bubble/bubble');
     }
 
     void toggleVisibility(ValueNotifier<bool> visibility,
@@ -48,44 +42,72 @@ class BubbleGame extends HookWidget {
           child: Stack(
             children: [
               Center(
-                child: buildBubbleImage(bubbleVisibilities[0],
-                    bubbleInteractable[0], 0, toggleVisibility),
+                child: buildBubbleImage(
+                  bubbleVisibilities[0],
+                  bubbleInteractable[0],
+                  toggleVisibility,
+                  0,
+                ),
               ),
               Positioned(
                 top: 20.r,
                 left: 150.r,
-                child: buildBubbleImage(bubbleVisibilities[1],
-                    bubbleInteractable[1], 1, toggleVisibility),
+                child: buildBubbleImage(
+                  bubbleVisibilities[1],
+                  bubbleInteractable[1],
+                  toggleVisibility,
+                  1,
+                ),
               ),
               Positioned(
                 top: 20.r,
                 right: 150.r,
-                child: buildBubbleImage(bubbleVisibilities[2],
-                    bubbleInteractable[2], 2, toggleVisibility),
+                child: buildBubbleImage(
+                  bubbleVisibilities[2],
+                  bubbleInteractable[2],
+                  toggleVisibility,
+                  2,
+                ),
               ),
               Positioned(
                 bottom: 20.r,
                 left: 150.r,
-                child: buildBubbleImage(bubbleVisibilities[3],
-                    bubbleInteractable[3], 3, toggleVisibility),
+                child: buildBubbleImage(
+                  bubbleVisibilities[3],
+                  bubbleInteractable[3],
+                  toggleVisibility,
+                  3,
+                ),
               ),
               Positioned(
                 bottom: 20.r,
                 right: 150.r,
-                child: buildBubbleImage(bubbleVisibilities[4],
-                    bubbleInteractable[4], 4, toggleVisibility),
+                child: buildBubbleImage(
+                  bubbleVisibilities[4],
+                  bubbleInteractable[4],
+                  toggleVisibility,
+                  4,
+                ),
               ),
               Positioned(
                 top: 130.r,
                 left: 20.r,
-                child: buildBubbleImage(bubbleVisibilities[5],
-                    bubbleInteractable[5], 5, toggleVisibility),
+                child: buildBubbleImage(
+                  bubbleVisibilities[5],
+                  bubbleInteractable[5],
+                  toggleVisibility,
+                  5,
+                ),
               ),
               Positioned(
                 bottom: 130.r,
                 right: 20.r,
-                child: buildBubbleImage(bubbleVisibilities[6],
-                    bubbleInteractable[6], 6, toggleVisibility),
+                child: buildBubbleImage(
+                  bubbleVisibilities[6],
+                  bubbleInteractable[6],
+                  toggleVisibility,
+                  6,
+                ),
               ),
             ],
           ),
@@ -95,13 +117,16 @@ class BubbleGame extends HookWidget {
   }
 
   Widget buildBubbleImage(
-      ValueNotifier<bool> visibility,
-      ValueNotifier<bool> interactable,
-      int index,
-      void Function(ValueNotifier<bool>, ValueNotifier<bool>, int)
-          toggleVisibility) {
+    ValueNotifier<bool> visibility,
+    ValueNotifier<bool> interactable,
+    void Function(ValueNotifier<bool>, ValueNotifier<bool>, int)
+        toggleVisibility,
+    int index,
+  ) {
     return GestureDetector(
-      onTap: () => toggleVisibility(visibility, interactable, index),
+      onTap: () {
+        toggleVisibility(visibility, interactable, index);
+      },
       child: visibility.value
           ? Image.asset(
               'assets/images/bubble/bubble.png',
