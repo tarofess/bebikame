@@ -1,6 +1,7 @@
 import 'package:bebikame/app_lifecycle_observer.dart';
 import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
+import 'package:bebikame/theme.dart';
 import 'package:bebikame/view/game_selection_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,16 +10,18 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-void main() {
+void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  SystemChrome.setPreferredOrientations([
+
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
-  ]).then((_) {
-    setupGetIt();
-    runApp(ProviderScope(child: MyApp()));
-  });
+  ]);
+
+  setupGetIt();
+  runApp(ProviderScope(child: MyApp()));
+
   FlutterNativeSplash.remove();
 }
 
@@ -46,10 +49,7 @@ class MyApp extends HookConsumerWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp(
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.pinkAccent),
-            useMaterial3: true,
-          ),
+          theme: createTheme(),
           home: GameSelectionView(),
         );
       },
