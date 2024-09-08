@@ -10,6 +10,7 @@ import 'package:bebikame/view/game/music_game.dart';
 import 'package:bebikame/view/game/night_game.dart';
 import 'package:bebikame/view/game/vehicle_game.dart';
 import 'package:bebikame/view/video_preview_view.dart';
+import 'package:bebikame/viewmodel/game_viewmodel.dart';
 import 'package:bebikame/viewmodel/provider/selected_game_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -23,6 +24,7 @@ class GameView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final vm = ref.watch(gameViewModel);
     final index = ref.watch(selectedGameProvider);
     final shootingTime = useState<int?>(0);
     final timer = useState<Timer?>(null);
@@ -39,22 +41,11 @@ class GameView extends HookConsumerWidget {
       };
     }, []);
 
-    void startCountdown() {
-      if (timer.value != null || shootingTime.value == null) return;
-
-      timer.value = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (shootingTime.value! > 1) {
-          shootingTime.value = shootingTime.value! - 1;
-        } else {
-          timer.cancel();
-          navigationService.push(context, VideoPreviewView());
-        }
-      });
-    }
-
     return Scaffold(
       body: GestureDetector(
-        onTap: () => startCountdown(),
+        onTap: () => vm.startCountdown(timer, shootingTime, () {
+          navigationService.push(context, VideoPreviewView());
+        }),
         child: Stack(
           children: [
             switch (index) {
