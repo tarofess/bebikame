@@ -7,9 +7,13 @@ class AudioService {
 
   Future<void> loadAudio(String fileName) async {
     if (!_audioPlayers.containsKey(fileName)) {
-      final player = AudioPlayer();
-      await player.setSource(AssetSource('sounds/$fileName.mp3'));
-      _audioPlayers[fileName] = player;
+      try {
+        final player = AudioPlayer();
+        await player.setSource(AssetSource('sounds/$fileName.mp3'));
+        _audioPlayers[fileName] = player;
+      } catch (e) {
+        throw Exception('音声の読み込み中にエラーが発生しました。');
+      }
     }
   }
 
@@ -18,35 +22,55 @@ class AudioService {
     if (!_audioPlayers.containsKey(fileName)) {
       await loadAudio(fileName);
     }
-    final player = _audioPlayers[fileName]!;
-    player.setReleaseMode(loop ? ReleaseMode.loop : ReleaseMode.release);
-    player.setPlayerMode(PlayerMode.lowLatency);
-    player.setVolume(volume);
-    await player.resume();
+    try {
+      final player = _audioPlayers[fileName]!;
+      player.setReleaseMode(loop ? ReleaseMode.loop : ReleaseMode.release);
+      player.setPlayerMode(PlayerMode.lowLatency);
+      player.setVolume(volume);
+      await player.resume();
+    } catch (e) {
+      throw Exception('音声の再生中にエラーが発生しました。');
+    }
   }
 
   Future<void> stop(String fileName) async {
-    if (_audioPlayers.containsKey(fileName)) {
-      await _audioPlayers[fileName]!.stop();
+    try {
+      if (_audioPlayers.containsKey(fileName)) {
+        await _audioPlayers[fileName]!.stop();
+      }
+    } catch (e) {
+      throw Exception('音声の停止中にエラーが発生しました。');
     }
   }
 
   Future<void> pause(String fileName) async {
-    if (_audioPlayers.containsKey(fileName)) {
-      await _audioPlayers[fileName]!.pause();
+    try {
+      if (_audioPlayers.containsKey(fileName)) {
+        await _audioPlayers[fileName]!.pause();
+      }
+    } catch (e) {
+      throw Exception('音声の一時停止中にエラーが発生しました。');
     }
   }
 
   Future<void> resume(String fileName) async {
-    if (_audioPlayers.containsKey(fileName)) {
-      await _audioPlayers[fileName]!.resume();
+    try {
+      if (_audioPlayers.containsKey(fileName)) {
+        await _audioPlayers[fileName]!.resume();
+      }
+    } catch (e) {
+      throw Exception('音声の再開中にエラーが発生しました。');
     }
   }
 
   void dispose() {
-    for (var player in _audioPlayers.values) {
-      player.dispose();
+    try {
+      for (var player in _audioPlayers.values) {
+        player.dispose();
+      }
+      _audioPlayers.clear();
+    } catch (e) {
+      throw Exception('音声の破棄中にエラーが発生しました。');
     }
-    _audioPlayers.clear();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:bebikame/get_it.dart';
+import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/view/game/animal_game.dart';
@@ -16,6 +17,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class GamePreviewView extends ConsumerWidget {
   final navigationService = getIt<NavigationService>();
   final dialogService = getIt<DialogService>();
+  final audioService = getIt<AudioService>();
 
   GamePreviewView({super.key});
 
@@ -32,15 +34,12 @@ class GamePreviewView extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.check_circle),
             onPressed: () async {
-              final result = await dialogService.showConfirmationDialog(
-                context,
-                gameType[index]['name']!,
-                'このゲームで録画を開始しますか？',
-                '開始する',
-                'キャンセル',
-              );
-              if (result == true && context.mounted) {
-                navigationService.push(context, GameView());
+              try {
+                await handleStartRecordingButtonPress(context);
+              } catch (e) {
+                if (context.mounted) {
+                  await dialogService.showErrorDialog(context, e.toString());
+                }
               }
             },
           ),
@@ -58,5 +57,20 @@ class GamePreviewView extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  Future<void> handleStartRecordingButtonPress(BuildContext context) async {
+    final result = await dialogService.showConfirmationDialog(
+      context,
+      'ゲーム開始',
+      'このゲームで録画を開始しますか？',
+      '開始する',
+      'キャンセル',
+    );
+
+    if (result == true && context.mounted) {
+      await audioService.stop('bgm');
+      if (context.mounted) navigationService.push(context, GameView());
+    }
   }
 }
