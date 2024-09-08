@@ -1,4 +1,4 @@
-package com.tarofess.bebikame.bebikame
+package com.tarofess.bebikame
 
 import io.flutter.embedding.android.FlutterActivity
 
