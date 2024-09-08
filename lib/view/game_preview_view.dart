@@ -40,7 +40,7 @@ class GamePreviewView extends ConsumerWidget {
                 'キャンセル',
               );
               if (result == true && context.mounted) {
-                navigationService.push(context, const GameView());
+                navigationService.push(context, GameView());
               }
             },
           ),
