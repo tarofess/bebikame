@@ -1,6 +1,8 @@
 import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
+import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
+import 'package:bebikame/service/shared_preferences_service.dart';
 import 'package:bebikame/view/game_preview_view.dart';
 import 'package:bebikame/viewmodel/provider/game_provider.dart';
 import 'package:bebikame/viewmodel/provider/selected_game_provider.dart';
@@ -9,7 +11,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameSelectionView extends ConsumerWidget {
   final navigationService = getIt<NavigationService>();
+  final dialogService = getIt<DialogService>();
   final audioService = getIt<AudioService>();
+  final sharedPrefService = getIt<SharedPreferencesService>();
 
   GameSelectionView({super.key});
 
@@ -24,7 +28,15 @@ class GameSelectionView extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () {},
+            onPressed: () async {
+              try {
+                await handleSettingButtonPress(context, sharedPrefService);
+              } catch (e) {
+                if (context.mounted) {
+                  dialogService.showErrorDialog(context, e.toString());
+                }
+              }
+            },
           ),
         ],
       ),
@@ -67,5 +79,17 @@ class GameSelectionView extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> handleSettingButtonPress(
+      BuildContext context, SharedPreferencesService sharedPrefService) async {
+    final savedShootingTime = await sharedPrefService.getShootingTime();
+    if (context.mounted) {
+      final result =
+          await dialogService.showSettingsDialog(context, savedShootingTime);
+      if (result != null) {
+        await sharedPrefService.saveShootingTime(result);
+      }
+    }
   }
 }

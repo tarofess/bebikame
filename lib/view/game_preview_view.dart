@@ -1,4 +1,5 @@
 import 'package:bebikame/get_it.dart';
+import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/view/game/animal_game.dart';
 import 'package:bebikame/view/game/bubble_game.dart';
@@ -14,6 +15,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GamePreviewView extends ConsumerWidget {
   final navigationService = getIt<NavigationService>();
+  final dialogService = getIt<DialogService>();
 
   GamePreviewView({super.key});
 
@@ -29,8 +31,17 @@ class GamePreviewView extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.check_circle),
-            onPressed: () {
-              navigationService.push(context, const GameView());
+            onPressed: () async {
+              final result = await dialogService.showConfirmationDialog(
+                context,
+                gameType[index]['name']!,
+                'このゲームで録画を開始しますか？',
+                '開始する',
+                'キャンセル',
+              );
+              if (result == true && context.mounted) {
+                navigationService.push(context, const GameView());
+              }
             },
           ),
         ],
