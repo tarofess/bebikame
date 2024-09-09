@@ -61,7 +61,7 @@ class AudioService {
         await Future.delayed(stepDuration);
       }
 
-      await player.stop();
+      await player.pause();
       await player.setVolume(originalVolume);
     } catch (e) {
       throw Exception('音声のフェードアウト停止中にエラーが発生しました。');

@@ -22,6 +22,17 @@ class DialogService {
     return result ?? false;
   }
 
+  Future<void> showMessageDialog(
+      BuildContext context, String title, String content) async {
+    await showSingleButtonDialogBase(
+      context: context,
+      title: title,
+      content: content,
+      buttonText: 'はい',
+      handleButtonPress: (dialogContext) => Navigator.of(dialogContext).pop(),
+    );
+  }
+
   Future<void> showErrorDialog(BuildContext context, String content) async {
     await showSingleButtonDialogBase(
       context: context,

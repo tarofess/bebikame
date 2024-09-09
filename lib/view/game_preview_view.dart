@@ -34,7 +34,7 @@ class GamePreviewView extends ConsumerWidget {
         title: Text(gameType[index]['name']!),
         actions: [
           IconButton(
-            icon: const Icon(Icons.check_circle),
+            icon: const Icon(Icons.check),
             onPressed: () async {
               try {
                 await handleStartRecordingButtonPress(context);
@@ -86,7 +86,10 @@ class GamePreviewView extends ConsumerWidget {
       }
 
       await audioService.fadeOutStop('bgm');
-      if (context.mounted) navigationService.push(context, GameView());
+      if (context.mounted) {
+        navigationService.pushReplacementWithAnimationFromBottom(
+            context, GameView());
+      }
     } else if (cameraStatus.isPermanentlyDenied ||
         microphoneStatus.isPermanentlyDenied) {
       openAppSettings();
