@@ -86,7 +86,7 @@ class VideoPreviewView extends HookConsumerWidget {
       final result = await dialogService.showConfirmationDialog(
           context, '確認', 'ゲーム選択画面に戻りますか？', 'はい', 'いいえ');
       if (result) {
-        await audioService.fadeInStart('bgm');
+        audioService.fadeInStart('bgm');
         if (context.mounted) {
           navigationService.pushAndRemoveUntil(context, GameSelectionView());
         }
