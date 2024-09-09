@@ -34,79 +34,76 @@ class GameView extends HookConsumerWidget {
     final timer = useState<Timer?>(null);
 
     useEffect(() {
-      void setupTimer() async {
-        shootingTime.value = await sharedPrefService.getShootingTime();
+      Future<void> startRecording() async {
+        try {
+          shootingTime.value = await sharedPrefService.getShootingTime();
+          await cameraService.initializeCamera();
+          await cameraService.startRecording();
+          vm.startCountdown(timer, shootingTime, () async {
+            final videoPath = await cameraService.stopRecording();
+            if (context.mounted) {
+              navigationService.pushAndRemoveUntil(
+                  context, VideoPreviewView(videoPath: videoPath));
+            }
+          });
+        } catch (e) {
+          if (context.mounted) {
+            await dialogService.showErrorDialog(
+              context,
+              '撮影開始時に予期せぬエラーが発生しました。\n'
+              'ゲームプレビュー画面に戻ります。',
+            );
+            if (context.mounted) navigationService.pop(context);
+          }
+        }
       }
 
-      setupTimer();
+      startRecording();
       return () {
         timer.value?.cancel();
         cameraService.dispose();
       };
     }, []);
 
-    Future<void> startRecording() async {
-      await cameraService.initializeCamera();
-      await cameraService.startRecording();
-      vm.startCountdown(timer, shootingTime, () async {
-        final videoPath = await cameraService.stopRecording();
-        if (context.mounted) {
-          navigationService.pushAndRemoveUntil(
-              context, VideoPreviewView(videoPath: videoPath));
-        }
-      });
-    }
-
     return Scaffold(
-      body: GestureDetector(
-        onTap: () async {
-          try {
-            if (!cameraService.isRecording) await startRecording();
-          } catch (e) {
-            if (context.mounted) {
-              await dialogService.showErrorDialog(context, e.toString());
-            }
-          }
-        },
-        child: Stack(
-          children: [
-            switch (index) {
-              0 => const AnimalGame(),
-              1 => const VehicleGame(),
-              2 => const BubbleGame(),
-              3 => const NightGame(),
-              4 => const FireworksGame(),
-              5 => const MusicGame(),
-              _ => const Text('なし'),
-            },
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 3,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Text(
-                  (shootingTime.value ?? 0).toString(),
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
+      body: Stack(
+        children: [
+          switch (index) {
+            0 => const AnimalGame(),
+            1 => const VehicleGame(),
+            2 => const BubbleGame(),
+            3 => const NightGame(),
+            4 => const FireworksGame(),
+            5 => const MusicGame(),
+            _ => const Text('なし'),
+          },
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: const Offset(0, 2),
                   ),
+                ],
+              ),
+              child: Text(
+                (shootingTime.value ?? 0).toString(),
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

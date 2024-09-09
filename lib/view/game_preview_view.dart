@@ -9,6 +9,7 @@ import 'package:bebikame/view/game/music_game.dart';
 import 'package:bebikame/view/game/night_game.dart';
 import 'package:bebikame/view/game/vehicle_game.dart';
 import 'package:bebikame/view/game_view.dart';
+import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/viewmodel/provider/game_provider.dart';
 import 'package:bebikame/viewmodel/provider/selected_game_provider.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +80,11 @@ class GamePreviewView extends ConsumerWidget {
     final microphoneStatus = await Permission.microphone.request();
 
     if (cameraStatus.isGranted && microphoneStatus.isGranted) {
+      if (context.mounted) {
+        await LoadingOverlay.of(context)
+            .during(() => Future.delayed(const Duration(seconds: 2)));
+      }
+
       await audioService.fadeOutStop('bgm');
       if (context.mounted) navigationService.push(context, GameView());
     } else if (cameraStatus.isPermanentlyDenied ||
