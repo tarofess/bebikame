@@ -64,7 +64,34 @@ class AudioService {
       await player.pause();
       await player.setVolume(originalVolume);
     } catch (e) {
-      throw Exception('音声のフェードアウト停止中にエラーが発生しました。');
+      throw Exception('音声の停止中にエラーが発生しました。');
+    }
+  }
+
+  Future<void> fadeInStart(String fileName,
+      {Duration duration = const Duration(milliseconds: 1000)}) async {
+    if (!_audioPlayers.containsKey(fileName)) {
+      await loadAudio(fileName);
+    }
+
+    try {
+      final player = _audioPlayers[fileName]!;
+      const targetVolume = 0.3;
+      const fadeSteps = 10;
+      final stepDuration = duration ~/ fadeSteps;
+      const volumeStep = targetVolume / fadeSteps;
+
+      await player.setVolume(0);
+      await player.resume();
+
+      for (int i = 1; i <= fadeSteps; i++) {
+        await player.setVolume(volumeStep * i);
+        await Future.delayed(stepDuration);
+      }
+
+      await player.setVolume(targetVolume);
+    } catch (e) {
+      throw Exception('音声の開始中にエラーが発生しました。');
     }
   }
 
