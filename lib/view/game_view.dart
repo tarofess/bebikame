@@ -36,7 +36,7 @@ class GameView extends HookConsumerWidget {
     useEffect(() {
       Future<void> startRecording() async {
         try {
-          shootingTime.value = await sharedPrefService.getShootingTime();
+          shootingTime.value = await sharedPrefService.getShootingTime() ?? 15;
           await cameraService.initializeCamera();
           await cameraService.startRecording();
           vm.startCountdown(timer, shootingTime, () async {
