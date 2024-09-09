@@ -16,6 +16,12 @@ class VehicleGame extends HookWidget {
     final isAnimating = useState<Set<String>>({});
     final audioService = useMemoized(() => AudioService(), []);
 
+    useEffect(() {
+      return () {
+        audioService.dispose();
+      };
+    }, []);
+
     void playSound(String fileName) async {
       await audioService.play('vehicle/$fileName');
     }

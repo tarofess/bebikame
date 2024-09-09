@@ -15,6 +15,12 @@ class AnimalGame extends HookWidget {
     final dogScale = useState(1.0);
     final audioService = useMemoized(() => AudioService(), []);
 
+    useEffect(() {
+      return () {
+        audioService.dispose();
+      };
+    }, []);
+
     void animateScale(ValueNotifier<double> scale) {
       scale.value = 1.5;
       Future.delayed(const Duration(milliseconds: 200), () {

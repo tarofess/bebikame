@@ -20,6 +20,12 @@ class MusicGame extends HookWidget {
     final guitarTappable = useState(true);
     final audioService = useMemoized(() => AudioService(), []);
 
+    useEffect(() {
+      return () {
+        audioService.dispose();
+      };
+    }, []);
+
     void animateScale(ValueNotifier<double> scale, ValueNotifier<bool> tappable,
         int durationMs) {
       scale.value = 1.5;

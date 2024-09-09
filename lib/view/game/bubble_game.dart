@@ -12,6 +12,12 @@ class BubbleGame extends HookWidget {
     final bubbleInteractable = List.generate(7, (_) => useState(true));
     final audioService = useMemoized(() => AudioService(), []);
 
+    useEffect(() {
+      return () {
+        audioService.dispose();
+      };
+    }, []);
+
     Future<void> playSound() async {
       await audioService.stop('bubble/bubble');
       await audioService.play('bubble/bubble');

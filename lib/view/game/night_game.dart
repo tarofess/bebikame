@@ -15,6 +15,12 @@ class NightGame extends HookWidget {
     final audioService = useMemoized(() => AudioService(), []);
     final moonAudioService = useMemoized(() => AudioService(), []);
 
+    useEffect(() {
+      return () {
+        audioService.dispose();
+      };
+    }, []);
+
     void animateScale(ValueNotifier<double> scale) {
       scale.value = 1.2;
       Future.delayed(const Duration(milliseconds: 200), () {

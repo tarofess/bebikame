@@ -12,6 +12,12 @@ class FireworksGame extends HookWidget {
     final fireworks = useState<List<Firework>>([]);
     final audioService = useMemoized(() => AudioService(), []);
 
+    useEffect(() {
+      return () {
+        audioService.dispose();
+      };
+    }, []);
+
     Future<void> playSound() async {
       await audioService.stop('fireworks/fireworks');
       await audioService.play('fireworks/fireworks');
