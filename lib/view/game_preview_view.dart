@@ -73,11 +73,11 @@ class GamePreviewView extends ConsumerWidget {
     );
 
     if (result == true && context.mounted) {
-      await requestCameraPermission(context);
+      await requestPermissions(context);
     }
   }
 
-  Future<void> requestCameraPermission(BuildContext context) async {
+  Future<void> requestPermissions(BuildContext context) async {
     final cameraStatus = await Permission.camera.request();
     final microphoneStatus = await Permission.microphone.request();
     final storageStatus = Platform.isIOS
