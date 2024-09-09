@@ -1,4 +1,5 @@
 import 'package:bebikame/service/audio_service.dart';
+import 'package:bebikame/service/camera_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
@@ -11,4 +12,5 @@ void setupGetIt() {
   getIt.registerLazySingleton(() => DialogService());
   getIt.registerLazySingleton(() => AudioService());
   getIt.registerLazySingleton(() => SharedPreferencesService());
+  getIt.registerLazySingleton(() => CameraService());
 }

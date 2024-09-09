@@ -13,6 +13,7 @@ import 'package:bebikame/viewmodel/provider/game_provider.dart';
 import 'package:bebikame/viewmodel/provider/selected_game_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class GamePreviewView extends ConsumerWidget {
   final navigationService = getIt<NavigationService>();
@@ -69,8 +70,28 @@ class GamePreviewView extends ConsumerWidget {
     );
 
     if (result == true && context.mounted) {
-      await audioService.stop('bgm');
+      await requestCameraPermission(context);
+    }
+  }
+
+  Future<void> requestCameraPermission(BuildContext context) async {
+    final cameraStatus = await Permission.camera.request();
+    final microphoneStatus = await Permission.microphone.request();
+
+    if (cameraStatus.isGranted && microphoneStatus.isGranted) {
+      await audioService.fadeOutStop('bgm');
       if (context.mounted) navigationService.push(context, GameView());
+    } else if (cameraStatus.isPermanentlyDenied ||
+        microphoneStatus.isPermanentlyDenied) {
+      openAppSettings();
+    } else {
+      if (context.mounted) {
+        await dialogService.showErrorDialog(
+          context,
+          'カメラとマイクの使用が両方許可されていません。\n'
+          '設定からカメラとマイクの使用を許可してください。',
+        );
+      }
     }
   }
 }

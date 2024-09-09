@@ -43,6 +43,31 @@ class AudioService {
     }
   }
 
+  Future<void> fadeOutStop(String fileName,
+      {Duration duration = const Duration(milliseconds: 500)}) async {
+    if (!_audioPlayers.containsKey(fileName)) {
+      return;
+    }
+
+    try {
+      final player = _audioPlayers[fileName]!;
+      final originalVolume = player.volume;
+      const fadeSteps = 10;
+      final stepDuration = duration ~/ fadeSteps;
+      final volumeStep = originalVolume / fadeSteps;
+
+      for (int i = fadeSteps - 1; i >= 0; i--) {
+        await player.setVolume(volumeStep * i);
+        await Future.delayed(stepDuration);
+      }
+
+      await player.stop();
+      await player.setVolume(originalVolume);
+    } catch (e) {
+      throw Exception('音声のフェードアウト停止中にエラーが発生しました。');
+    }
+  }
+
   Future<void> pause(String fileName) async {
     try {
       if (_audioPlayers.containsKey(fileName)) {
@@ -60,6 +85,16 @@ class AudioService {
       }
     } catch (e) {
       throw Exception('音声の再開中にエラーが発生しました。');
+    }
+  }
+
+  Future<void> setVolume(String fileName, double volume) async {
+    try {
+      if (_audioPlayers.containsKey(fileName)) {
+        await _audioPlayers[fileName]!.setVolume(volume);
+      }
+    } catch (e) {
+      throw Exception('音量の設定中にエラーが発生しました。');
     }
   }
 

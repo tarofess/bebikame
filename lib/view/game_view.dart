@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:bebikame/get_it.dart';
+import 'package:bebikame/service/camera_service.dart';
+import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
 import 'package:bebikame/view/game/animal_game.dart';
@@ -19,6 +21,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class GameView extends HookConsumerWidget {
   final sharedPrefService = getIt<SharedPreferencesService>();
   final navigationService = getIt<NavigationService>();
+  final cameraService = getIt<CameraService>();
+  final dialogService = getIt<DialogService>();
 
   GameView({super.key});
 
@@ -35,17 +39,35 @@ class GameView extends HookConsumerWidget {
       }
 
       setupTimer();
-
       return () {
         timer.value?.cancel();
+        cameraService.dispose();
       };
     }, []);
 
+    Future<void> startRecording() async {
+      await cameraService.initializeCamera();
+      await cameraService.startRecording();
+      vm.startCountdown(timer, shootingTime, () async {
+        final videoPath = await cameraService.stopRecording();
+        if (context.mounted) {
+          navigationService.pushAndRemoveUntil(
+              context, VideoPreviewView(videoPath: videoPath));
+        }
+      });
+    }
+
     return Scaffold(
       body: GestureDetector(
-        onTap: () => vm.startCountdown(timer, shootingTime, () {
-          navigationService.push(context, VideoPreviewView());
-        }),
+        onTap: () async {
+          try {
+            if (!cameraService.isRecording) await startRecording();
+          } catch (e) {
+            if (context.mounted) {
+              await dialogService.showErrorDialog(context, e.toString());
+            }
+          }
+        },
         child: Stack(
           children: [
             switch (index) {
