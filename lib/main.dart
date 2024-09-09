@@ -1,4 +1,3 @@
-import 'package:bebikame/app_lifecycle_observer.dart';
 import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/theme.dart';
@@ -33,14 +32,8 @@ class MyApp extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      final observer = AppLifecycleObserver(audioService);
-      WidgetsBinding.instance.addObserver(observer);
       audioService.play('bgm', loop: true, volume: 0.3);
-
-      return () {
-        WidgetsBinding.instance.removeObserver(observer);
-        audioService.stop('bgm');
-      };
+      return () {};
     }, []);
 
     return ScreenUtilInit(

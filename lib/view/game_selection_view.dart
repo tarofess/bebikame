@@ -59,10 +59,12 @@ class GameSelectionView extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: InkWell(
-                    onTap: () {
-                      audioService.play('button_tap');
+                    onTap: () async {
+                      await audioService.play('button_tap');
                       ref.read(selectedGameProvider.notifier).state = index;
-                      navigationService.push(context, GamePreviewView());
+                      if (context.mounted) {
+                        navigationService.push(context, GamePreviewView());
+                      }
                     },
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
