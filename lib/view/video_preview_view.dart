@@ -54,54 +54,6 @@ class VideoPreviewView extends HookConsumerWidget {
       };
     }, []);
 
-    Future<void> retakeVideo() async {
-      final result = await _dialogService.showConfirmationDialog(
-          context, '再撮影', 'もう一度撮影し直しますか？', 'はい', 'いいえ');
-      if (!result) return;
-
-      if (context.mounted) {
-        await LoadingOverlay.of(context).during(
-          () => Future.delayed(const Duration(seconds: 2)),
-        );
-        if (context.mounted) {
-          _navigationService.pushReplacementWithAnimationFromBottom(
-            context,
-            GameView(),
-          );
-        }
-      }
-    }
-
-    Future<void> saveVideo() async {
-      final result = await _dialogService.showConfirmationDialog(
-          context, '動画の保存', '撮影した動画を保存しますか？', 'はい', 'いいえ');
-      if (!result) return;
-
-      if (_videoPath == null) {
-        throw Exception('撮影した動画が見つからないため保存できませんでした。');
-      }
-
-      if (context.mounted) {
-        await LoadingOverlay.of(context).during(
-          () => _videoService.saveVideo(_videoPath),
-        );
-        if (context.mounted) {
-          await _dialogService.showMessageDialog(context, '保存完了', '動画を保存しました。');
-        }
-      }
-    }
-
-    Future<void> returnToGameSelectionView() async {
-      final result = await _dialogService.showConfirmationDialog(
-          context, '確認', 'ゲーム選択画面に戻りますか？', 'はい', 'いいえ');
-      if (!result) return;
-
-      _audioService.fadeInStart('bgm');
-      if (context.mounted) {
-        _navigationService.pushAndRemoveUntil(context, GameSelectionView());
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -109,14 +61,14 @@ class VideoPreviewView extends HookConsumerWidget {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.redo),
-          onPressed: () async => await retakeVideo(),
+          onPressed: () async => await _retakeVideo(context),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.save_alt),
             onPressed: () async {
               try {
-                await saveVideo();
+                await _saveVideo(context);
               } catch (e) {
                 if (context.mounted) {
                   await _dialogService.showErrorDialog(context, e.toString());
@@ -127,7 +79,7 @@ class VideoPreviewView extends HookConsumerWidget {
           IconButton(
             icon: const Icon(Icons.exit_to_app),
             onPressed: () async {
-              await returnToGameSelectionView();
+              await _returnToGameSelectionView(context);
             },
           ),
         ],
@@ -147,17 +99,71 @@ class VideoPreviewView extends HookConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (videoPlayerController.value != null) {
-            isVideoPlaying.value
-                ? videoPlayerController.value!.pause()
-                : videoPlayerController.value!.play();
-            isVideoPlaying.value = !isVideoPlaying.value;
-          }
+          _togglePlayButton(videoPlayerController, isVideoPlaying);
         },
         child: Icon(
           isVideoPlaying.value ? Icons.pause : Icons.play_arrow,
         ),
       ),
     );
+  }
+
+  Future<void> _retakeVideo(BuildContext context) async {
+    final result = await _dialogService.showConfirmationDialog(
+        context, '再撮影', 'もう一度撮影し直しますか？', 'はい', 'いいえ');
+    if (!result) return;
+
+    if (context.mounted) {
+      await LoadingOverlay.of(context).during(
+        () => Future.delayed(const Duration(seconds: 2)),
+      );
+      if (context.mounted) {
+        _navigationService.pushReplacementWithAnimationFromBottom(
+          context,
+          GameView(),
+        );
+      }
+    }
+  }
+
+  Future<void> _saveVideo(BuildContext context) async {
+    final result = await _dialogService.showConfirmationDialog(
+        context, '動画の保存', '撮影した動画を保存しますか？', 'はい', 'いいえ');
+    if (!result) return;
+
+    if (_videoPath == null) {
+      throw Exception('撮影した動画が見つからないため保存できませんでした。');
+    }
+
+    if (context.mounted) {
+      await LoadingOverlay.of(context).during(
+        () => _videoService.saveVideo(_videoPath),
+      );
+      if (context.mounted) {
+        await _dialogService.showMessageDialog(context, '保存完了', '動画を保存しました。');
+      }
+    }
+  }
+
+  Future<void> _returnToGameSelectionView(BuildContext context) async {
+    final result = await _dialogService.showConfirmationDialog(
+        context, '確認', 'ゲーム選択画面に戻りますか？', 'はい', 'いいえ');
+    if (!result) return;
+
+    _audioService.fadeInStart('bgm');
+    if (context.mounted) {
+      _navigationService.pushAndRemoveUntil(context, GameSelectionView());
+    }
+  }
+
+  void _togglePlayButton(
+      ValueNotifier<VideoPlayerController?> videoPlayerController,
+      ValueNotifier<bool> isVideoPlaying) {
+    if (videoPlayerController.value != null) {
+      isVideoPlaying.value
+          ? videoPlayerController.value!.pause()
+          : videoPlayerController.value!.play();
+      isVideoPlaying.value = !isVideoPlaying.value;
+    }
   }
 }
