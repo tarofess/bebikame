@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
+import 'package:bebikame/service/permission_handler_service.dart';
 import 'package:bebikame/view/game/animal_game.dart';
 import 'package:bebikame/view/game/bubble_game.dart';
 import 'package:bebikame/view/game/fireworks_game.dart';
@@ -22,6 +21,7 @@ class GamePreviewView extends ConsumerWidget {
   final _navigationService = getIt<NavigationService>();
   final _dialogService = getIt<DialogService>();
   final _audioService = getIt<AudioService>();
+  final _permissionHandlerService = getIt<PermissionHandlerService>();
 
   GamePreviewView({super.key});
 
@@ -39,7 +39,7 @@ class GamePreviewView extends ConsumerWidget {
             icon: const Icon(Icons.check),
             onPressed: () async {
               try {
-                await handleStartRecordingButtonPress(context);
+                await _handleStartRecordingButtonPress(context);
               } catch (e) {
                 if (context.mounted) {
                   await _dialogService.showErrorDialog(context, e.toString());
@@ -63,40 +63,24 @@ class GamePreviewView extends ConsumerWidget {
     );
   }
 
-  Future<void> handleStartRecordingButtonPress(BuildContext context) async {
+  Future<void> _handleStartRecordingButtonPress(BuildContext context) async {
     final result = await _dialogService.showConfirmationDialog(
-      context,
-      'ゲーム開始',
-      'このゲームで録画を開始しますか？',
-      '開始する',
-      'キャンセル',
-    );
+        context, 'ゲーム開始', 'このゲームで録画を開始しますか？', '開始する', 'キャンセル');
+    if (!result) return;
 
-    if (result == true && context.mounted) {
-      await requestPermissions(context);
-    }
-  }
+    bool isAllPermissionsGranted =
+        await _permissionHandlerService.requestPermissions();
 
-  Future<void> requestPermissions(BuildContext context) async {
-    final cameraStatus = await Permission.camera.request();
-    final microphoneStatus = await Permission.microphone.request();
-    final storageStatus = Platform.isIOS
-        ? await Permission.photos.request()
-        : await Permission.storage.request();
-
-    if (cameraStatus.isGranted &&
-        microphoneStatus.isGranted &&
-        (storageStatus.isGranted || storageStatus.isLimited)) {
+    if (isAllPermissionsGranted) {
       if (context.mounted) {
         await LoadingOverlay.of(context).during(
           () => Future.delayed(const Duration(seconds: 2)),
         );
-      }
-
-      await _audioService.fadeOutStop('bgm');
-      if (context.mounted) {
-        _navigationService.pushReplacementWithAnimationFromBottom(
-            context, GameView());
+        await _audioService.fadeOutStop('bgm');
+        if (context.mounted) {
+          _navigationService.pushReplacementWithAnimationFromBottom(
+              context, GameView());
+        }
       }
     } else {
       if (context.mounted) {

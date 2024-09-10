@@ -4,6 +4,7 @@ import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
 import 'package:bebikame/view/game_preview_view.dart';
+import 'package:bebikame/view/widget/game_card.dart';
 import 'package:bebikame/viewmodel/provider/game_provider.dart';
 import 'package:bebikame/viewmodel/provider/selected_game_provider.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class GameSelectionView extends ConsumerWidget {
             icon: const Icon(Icons.settings),
             onPressed: () async {
               try {
-                await handleSettingButtonPress(context, _sharedPrefService);
+                await _handleSettingButtonPress(context, _sharedPrefService);
               } catch (e) {
                 if (context.mounted) {
                   _dialogService.showErrorDialog(context, e.toString());
@@ -53,29 +54,17 @@ class GameSelectionView extends ConsumerWidget {
               ),
               itemCount: game.length,
               itemBuilder: (context, index) {
-                return Card(
-                  elevation: 8.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: InkWell(
-                    onTap: () async {
-                      try {
-                        await handleGridTilePress(context, ref, index);
-                      } catch (e) {
-                        if (context.mounted) {
-                          _dialogService.showErrorDialog(context, e.toString());
-                        }
+                return GameCard(
+                  imagePath: game[index]['image']!,
+                  onTap: () async {
+                    try {
+                      await _handleGridTilePress(context, ref, index);
+                    } catch (e) {
+                      if (context.mounted) {
+                        _dialogService.showErrorDialog(context, e.toString());
                       }
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        game[index]['image']!,
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ),
+                    }
+                  },
                 );
               },
             ),
@@ -85,7 +74,7 @@ class GameSelectionView extends ConsumerWidget {
     );
   }
 
-  Future<void> handleGridTilePress(
+  Future<void> _handleGridTilePress(
       BuildContext context, WidgetRef ref, int index) async {
     await _audioService.play('button_tap');
     ref.read(selectedGameProvider.notifier).state = index;
@@ -94,7 +83,7 @@ class GameSelectionView extends ConsumerWidget {
     }
   }
 
-  Future<void> handleSettingButtonPress(
+  Future<void> _handleSettingButtonPress(
       BuildContext context, SharedPreferencesService sharedPrefService) async {
     final savedShootingTime = await sharedPrefService.getShootingTime();
     if (context.mounted) {

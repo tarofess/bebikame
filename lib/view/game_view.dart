@@ -34,34 +34,27 @@ class GameView extends HookConsumerWidget {
     final timer = useState<Timer?>(null);
 
     useEffect(() {
-      Future<void> startRecording() async {
-        try {
-          shootingTime.value = await _sharedPrefService.getShootingTime() ?? 15;
-          await _videoService.initializeCamera();
-          await _videoService.startRecording();
-          vm.startCountdown(timer, shootingTime, () async {
-            final videoPath = await _videoService.stopRecording();
-            if (context.mounted) {
-              _navigationService.pushAndRemoveUntil(
-                  context, VideoPreviewView(videoPath: videoPath));
-            }
-          });
-        } catch (e) {
+      try {
+        vm.startRecording(
+            shootingTime, _sharedPrefService, _videoService, timer, () async {
+          final videoPath = await _videoService.stopRecording();
           if (context.mounted) {
-            await _dialogService.showErrorDialog(
-              context,
-              '撮影開始時に予期せぬエラーが発生しました。\n'
-              'ゲームプレビュー画面に戻ります。',
-            );
-            if (context.mounted) _navigationService.pop(context);
+            _navigationService.pushAndRemoveUntil(
+                context, VideoPreviewView(videoPath: videoPath));
           }
+        });
+      } catch (e) {
+        if (context.mounted) {
+          _dialogService.showErrorDialog(
+            context,
+            '撮影開始時に予期せぬエラーが発生しました。\n'
+            '動画を撮影することができません。',
+          );
+          if (context.mounted) _navigationService.pop(context);
         }
       }
-
-      startRecording();
       return () {
-        timer.value?.cancel();
-        _videoService.dispose();
+        vm.cleanUp(_videoService, timer);
       };
     }, []);
 
@@ -77,33 +70,37 @@ class GameView extends HookConsumerWidget {
             5 => const MusicGame(),
             _ => const Text('なし'),
           },
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Text(
-                (shootingTime.value ?? 0).toString(),
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
+          _buildCountdownText(shootingTime),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCountdownText(ValueNotifier<int?> shootingTime) {
+    return Positioned(
+      bottom: 20,
+      right: 20,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Text(
+          (shootingTime.value ?? 0).toString(),
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
