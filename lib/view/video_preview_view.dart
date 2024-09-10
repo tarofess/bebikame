@@ -13,13 +13,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPreviewView extends HookConsumerWidget {
-  final String? videoPath;
-  final navigationService = getIt<NavigationService>();
-  final dialogService = getIt<DialogService>();
-  final audioService = getIt<AudioService>();
-  final videoService = getIt<VideoService>();
+  final String? _videoPath;
+  final _navigationService = getIt<NavigationService>();
+  final _dialogService = getIt<DialogService>();
+  final _audioService = getIt<AudioService>();
+  final _videoService = getIt<VideoService>();
 
-  VideoPreviewView({super.key, required this.videoPath});
+  VideoPreviewView({super.key, required String? videoPath})
+      : _videoPath = videoPath;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,23 +30,24 @@ class VideoPreviewView extends HookConsumerWidget {
 
     useEffect(() {
       Future<void> initializeVideo() async {
-        if (videoPath != null) {
-          final controller = VideoPlayerController.file(File(videoPath!));
-          videoPlayerController.value = controller;
-
-          try {
-            await controller.initialize();
-            await controller.setLooping(true);
-            isInitialized.value = true;
-          } catch (e) {
-            if (context.mounted) {
-              await dialogService.showErrorDialog(context, e.toString());
-            }
-          }
+        if (_videoPath == null) {
+          throw Exception('動画が見つからないため再生できません。');
         }
+
+        final controller = VideoPlayerController.file(File(_videoPath));
+        videoPlayerController.value = controller;
+        await controller.initialize();
+        await controller.setLooping(true);
+        isInitialized.value = true;
       }
 
-      initializeVideo();
+      try {
+        initializeVideo();
+      } catch (e) {
+        if (context.mounted) {
+          _dialogService.showErrorDialog(context, e.toString());
+        }
+      }
 
       return () {
         videoPlayerController.value?.dispose();
@@ -53,48 +55,50 @@ class VideoPreviewView extends HookConsumerWidget {
     }, []);
 
     Future<void> retakeVideo() async {
-      final result = await dialogService.showConfirmationDialog(
+      final result = await _dialogService.showConfirmationDialog(
           context, '再撮影', 'もう一度撮影し直しますか？', 'はい', 'いいえ');
       if (!result) return;
 
       if (context.mounted) {
-        await LoadingOverlay.of(context)
-            .during(() => Future.delayed(const Duration(seconds: 2)));
+        await LoadingOverlay.of(context).during(
+          () => Future.delayed(const Duration(seconds: 2)),
+        );
         if (context.mounted) {
-          navigationService.pushReplacementWithAnimationFromBottom(
-              context, GameView());
+          _navigationService.pushReplacementWithAnimationFromBottom(
+            context,
+            GameView(),
+          );
         }
       }
     }
 
     Future<void> saveVideo() async {
-      final result = await dialogService.showConfirmationDialog(
+      final result = await _dialogService.showConfirmationDialog(
           context, '動画の保存', '撮影した動画を保存しますか？', 'はい', 'いいえ');
-      if (!result) {
-        return;
-      }
+      if (!result) return;
 
-      if (videoPath == null) {
+      if (_videoPath == null) {
         throw Exception('撮影した動画が見つからないため保存できませんでした。');
       }
 
       if (context.mounted) {
-        await LoadingOverlay.of(context)
-            .during(() => videoService.saveVideo(videoPath!));
+        await LoadingOverlay.of(context).during(
+          () => _videoService.saveVideo(_videoPath),
+        );
         if (context.mounted) {
-          await dialogService.showMessageDialog(context, '保存完了', '動画を保存しました。');
+          await _dialogService.showMessageDialog(context, '保存完了', '動画を保存しました。');
         }
       }
     }
 
     Future<void> returnToGameSelectionView() async {
-      final result = await dialogService.showConfirmationDialog(
+      final result = await _dialogService.showConfirmationDialog(
           context, '確認', 'ゲーム選択画面に戻りますか？', 'はい', 'いいえ');
-      if (result) {
-        audioService.fadeInStart('bgm');
-        if (context.mounted) {
-          navigationService.pushAndRemoveUntil(context, GameSelectionView());
-        }
+      if (!result) return;
+
+      _audioService.fadeInStart('bgm');
+      if (context.mounted) {
+        _navigationService.pushAndRemoveUntil(context, GameSelectionView());
       }
     }
 
@@ -115,7 +119,7 @@ class VideoPreviewView extends HookConsumerWidget {
                 await saveVideo();
               } catch (e) {
                 if (context.mounted) {
-                  await dialogService.showErrorDialog(context, e.toString());
+                  await _dialogService.showErrorDialog(context, e.toString());
                 }
               }
             },
@@ -130,7 +134,7 @@ class VideoPreviewView extends HookConsumerWidget {
       ),
       body: SafeArea(
         child: Center(
-          child: videoPath == null
+          child: _videoPath == null
               ? const Text('動画が見つかりません')
               : !isInitialized.value
                   ? const CircularProgressIndicator()

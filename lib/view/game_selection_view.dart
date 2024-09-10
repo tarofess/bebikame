@@ -10,10 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameSelectionView extends ConsumerWidget {
-  final navigationService = getIt<NavigationService>();
-  final dialogService = getIt<DialogService>();
-  final audioService = getIt<AudioService>();
-  final sharedPrefService = getIt<SharedPreferencesService>();
+  final _navigationService = getIt<NavigationService>();
+  final _dialogService = getIt<DialogService>();
+  final _audioService = getIt<AudioService>();
+  final _sharedPrefService = getIt<SharedPreferencesService>();
 
   GameSelectionView({super.key});
 
@@ -30,10 +30,10 @@ class GameSelectionView extends ConsumerWidget {
             icon: const Icon(Icons.settings),
             onPressed: () async {
               try {
-                await handleSettingButtonPress(context, sharedPrefService);
+                await handleSettingButtonPress(context, _sharedPrefService);
               } catch (e) {
                 if (context.mounted) {
-                  dialogService.showErrorDialog(context, e.toString());
+                  _dialogService.showErrorDialog(context, e.toString());
                 }
               }
             },
@@ -60,10 +60,12 @@ class GameSelectionView extends ConsumerWidget {
                   ),
                   child: InkWell(
                     onTap: () async {
-                      await audioService.play('button_tap');
-                      ref.read(selectedGameProvider.notifier).state = index;
-                      if (context.mounted) {
-                        navigationService.push(context, GamePreviewView());
+                      try {
+                        await handleGridTilePress(context, ref, index);
+                      } catch (e) {
+                        if (context.mounted) {
+                          _dialogService.showErrorDialog(context, e.toString());
+                        }
                       }
                     },
                     child: ClipRRect(
@@ -83,12 +85,21 @@ class GameSelectionView extends ConsumerWidget {
     );
   }
 
+  Future<void> handleGridTilePress(
+      BuildContext context, WidgetRef ref, int index) async {
+    await _audioService.play('button_tap');
+    ref.read(selectedGameProvider.notifier).state = index;
+    if (context.mounted) {
+      _navigationService.push(context, GamePreviewView());
+    }
+  }
+
   Future<void> handleSettingButtonPress(
       BuildContext context, SharedPreferencesService sharedPrefService) async {
     final savedShootingTime = await sharedPrefService.getShootingTime();
     if (context.mounted) {
       final result =
-          await dialogService.showSettingsDialog(context, savedShootingTime);
+          await _dialogService.showSettingsDialog(context, savedShootingTime);
       if (result != null) {
         await sharedPrefService.saveShootingTime(result);
       }

@@ -19,9 +19,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class GamePreviewView extends ConsumerWidget {
-  final navigationService = getIt<NavigationService>();
-  final dialogService = getIt<DialogService>();
-  final audioService = getIt<AudioService>();
+  final _navigationService = getIt<NavigationService>();
+  final _dialogService = getIt<DialogService>();
+  final _audioService = getIt<AudioService>();
 
   GamePreviewView({super.key});
 
@@ -42,7 +42,7 @@ class GamePreviewView extends ConsumerWidget {
                 await handleStartRecordingButtonPress(context);
               } catch (e) {
                 if (context.mounted) {
-                  await dialogService.showErrorDialog(context, e.toString());
+                  await _dialogService.showErrorDialog(context, e.toString());
                 }
               }
             },
@@ -64,7 +64,7 @@ class GamePreviewView extends ConsumerWidget {
   }
 
   Future<void> handleStartRecordingButtonPress(BuildContext context) async {
-    final result = await dialogService.showConfirmationDialog(
+    final result = await _dialogService.showConfirmationDialog(
       context,
       'ゲーム開始',
       'このゲームで録画を開始しますか？',
@@ -88,18 +88,19 @@ class GamePreviewView extends ConsumerWidget {
         microphoneStatus.isGranted &&
         (storageStatus.isGranted || storageStatus.isLimited)) {
       if (context.mounted) {
-        await LoadingOverlay.of(context)
-            .during(() => Future.delayed(const Duration(seconds: 2)));
+        await LoadingOverlay.of(context).during(
+          () => Future.delayed(const Duration(seconds: 2)),
+        );
       }
 
-      await audioService.fadeOutStop('bgm');
+      await _audioService.fadeOutStop('bgm');
       if (context.mounted) {
-        navigationService.pushReplacementWithAnimationFromBottom(
+        _navigationService.pushReplacementWithAnimationFromBottom(
             context, GameView());
       }
     } else {
       if (context.mounted) {
-        await dialogService.showErrorDialog(
+        await _dialogService.showErrorDialog(
           context,
           'カメラ、マイク、フォトライブラリへのアクセスが全て許可されていません。\n'
           '動画を撮影するために設定から全てのアクセスを許可してください。',

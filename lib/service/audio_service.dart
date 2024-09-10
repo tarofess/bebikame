@@ -5,7 +5,7 @@ class AudioService {
 
   AudioService();
 
-  Future<void> loadAudio(String fileName) async {
+  Future<void> _loadAudio(String fileName) async {
     if (!_audioPlayers.containsKey(fileName)) {
       try {
         final player = AudioPlayer();
@@ -20,7 +20,7 @@ class AudioService {
   Future<void> play(String fileName,
       {bool loop = false, double volume = 1.0}) async {
     if (!_audioPlayers.containsKey(fileName)) {
-      await loadAudio(fileName);
+      await _loadAudio(fileName);
     }
     try {
       final player = _audioPlayers[fileName]!;
@@ -71,7 +71,7 @@ class AudioService {
   Future<void> fadeInStart(String fileName,
       {Duration duration = const Duration(milliseconds: 1000)}) async {
     if (!_audioPlayers.containsKey(fileName)) {
-      await loadAudio(fileName);
+      await _loadAudio(fileName);
     }
 
     try {

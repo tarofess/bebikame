@@ -19,10 +19,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameView extends HookConsumerWidget {
-  final sharedPrefService = getIt<SharedPreferencesService>();
-  final navigationService = getIt<NavigationService>();
-  final videoService = getIt<VideoService>();
-  final dialogService = getIt<DialogService>();
+  final _sharedPrefService = getIt<SharedPreferencesService>();
+  final _navigationService = getIt<NavigationService>();
+  final _videoService = getIt<VideoService>();
+  final _dialogService = getIt<DialogService>();
 
   GameView({super.key});
 
@@ -36,24 +36,24 @@ class GameView extends HookConsumerWidget {
     useEffect(() {
       Future<void> startRecording() async {
         try {
-          shootingTime.value = await sharedPrefService.getShootingTime() ?? 15;
-          await videoService.initializeCamera();
-          await videoService.startRecording();
+          shootingTime.value = await _sharedPrefService.getShootingTime() ?? 15;
+          await _videoService.initializeCamera();
+          await _videoService.startRecording();
           vm.startCountdown(timer, shootingTime, () async {
-            final videoPath = await videoService.stopRecording();
+            final videoPath = await _videoService.stopRecording();
             if (context.mounted) {
-              navigationService.pushAndRemoveUntil(
+              _navigationService.pushAndRemoveUntil(
                   context, VideoPreviewView(videoPath: videoPath));
             }
           });
         } catch (e) {
           if (context.mounted) {
-            await dialogService.showErrorDialog(
+            await _dialogService.showErrorDialog(
               context,
               '撮影開始時に予期せぬエラーが発生しました。\n'
               'ゲームプレビュー画面に戻ります。',
             );
-            if (context.mounted) navigationService.pop(context);
+            if (context.mounted) _navigationService.pop(context);
           }
         }
       }
@@ -61,7 +61,7 @@ class GameView extends HookConsumerWidget {
       startRecording();
       return () {
         timer.value?.cancel();
-        videoService.dispose();
+        _videoService.dispose();
       };
     }, []);
 

@@ -8,7 +8,7 @@ class DialogService {
     String okButtonText,
     String cancelButtonText,
   ) async {
-    final result = await showConfirmationDialogBase(
+    final result = await _showConfirmationDialogBase(
       context: context,
       title: title,
       content: content,
@@ -24,7 +24,7 @@ class DialogService {
 
   Future<void> showMessageDialog(
       BuildContext context, String title, String content) async {
-    await showSingleButtonDialogBase(
+    await _showSingleButtonDialogBase(
       context: context,
       title: title,
       content: content,
@@ -34,7 +34,7 @@ class DialogService {
   }
 
   Future<void> showErrorDialog(BuildContext context, String content) async {
-    await showSingleButtonDialogBase(
+    await _showSingleButtonDialogBase(
       context: context,
       title: 'エラー',
       content: content,
@@ -123,7 +123,7 @@ class DialogService {
     return result;
   }
 
-  Future<T> showConfirmationDialogBase<T>({
+  Future<T> _showConfirmationDialogBase<T>({
     required BuildContext context,
     required String title,
     required String content,
@@ -183,7 +183,7 @@ class DialogService {
     );
   }
 
-  Future<void> showSingleButtonDialogBase({
+  Future<void> _showSingleButtonDialogBase({
     required BuildContext context,
     required String title,
     required String content,
