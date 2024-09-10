@@ -3,7 +3,7 @@ import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
-import 'package:bebikame/video_saver.dart';
+import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/view/game_selection_view.dart';
 import 'package:bebikame/view/game_view.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
@@ -17,6 +17,7 @@ class VideoPreviewView extends HookConsumerWidget {
   final navigationService = getIt<NavigationService>();
   final dialogService = getIt<DialogService>();
   final audioService = getIt<AudioService>();
+  final videoService = getIt<VideoService>();
 
   VideoPreviewView({super.key, required this.videoPath});
 
@@ -71,7 +72,7 @@ class VideoPreviewView extends HookConsumerWidget {
           context, '動画の保存', '撮影した動画を保存しますか？', 'はい', 'いいえ');
       if (saveResult) {
         if (videoPath != null) {
-          await VideoSaver.saveVideo(videoPath!);
+          await videoService.saveVideo(videoPath!);
           if (context.mounted) {
             await dialogService.showMessageDialog(
                 context, '保存完了', '動画を保存しました。');

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bebikame/get_it.dart';
-import 'package:bebikame/service/camera_service.dart';
+import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
@@ -21,7 +21,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class GameView extends HookConsumerWidget {
   final sharedPrefService = getIt<SharedPreferencesService>();
   final navigationService = getIt<NavigationService>();
-  final cameraService = getIt<CameraService>();
+  final videoService = getIt<VideoService>();
   final dialogService = getIt<DialogService>();
 
   GameView({super.key});
@@ -37,10 +37,10 @@ class GameView extends HookConsumerWidget {
       Future<void> startRecording() async {
         try {
           shootingTime.value = await sharedPrefService.getShootingTime() ?? 15;
-          await cameraService.initializeCamera();
-          await cameraService.startRecording();
+          await videoService.initializeCamera();
+          await videoService.startRecording();
           vm.startCountdown(timer, shootingTime, () async {
-            final videoPath = await cameraService.stopRecording();
+            final videoPath = await videoService.stopRecording();
             if (context.mounted) {
               navigationService.pushAndRemoveUntil(
                   context, VideoPreviewView(videoPath: videoPath));
@@ -61,7 +61,7 @@ class GameView extends HookConsumerWidget {
       startRecording();
       return () {
         timer.value?.cancel();
-        cameraService.dispose();
+        videoService.dispose();
       };
     }, []);
 
