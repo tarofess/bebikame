@@ -68,17 +68,21 @@ class VideoPreviewView extends HookConsumerWidget {
     }
 
     Future<void> saveVideo() async {
-      final saveResult = await dialogService.showConfirmationDialog(
+      final result = await dialogService.showConfirmationDialog(
           context, '動画の保存', '撮影した動画を保存しますか？', 'はい', 'いいえ');
-      if (saveResult) {
-        if (videoPath != null) {
-          await videoService.saveVideo(videoPath!);
-          if (context.mounted) {
-            await dialogService.showMessageDialog(
-                context, '保存完了', '動画を保存しました。');
-          }
-        } else {
-          throw Exception('動画の保存に失敗しました。');
+      if (!result) {
+        return;
+      }
+
+      if (videoPath == null) {
+        throw Exception('撮影した動画が見つからないため保存できませんでした。');
+      }
+
+      if (context.mounted) {
+        await LoadingOverlay.of(context)
+            .during(() => videoService.saveVideo(videoPath!));
+        if (context.mounted) {
+          await dialogService.showMessageDialog(context, '保存完了', '動画を保存しました。');
         }
       }
     }
