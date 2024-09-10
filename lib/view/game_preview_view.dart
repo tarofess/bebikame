@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bebikame/get_it.dart';
+import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/navigation_service.dart';

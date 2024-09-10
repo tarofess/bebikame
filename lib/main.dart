@@ -1,6 +1,6 @@
-import 'package:bebikame/get_it.dart';
+import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/theme.dart';
+import 'package:bebikame/config/theme.dart';
 import 'package:bebikame/view/game_selection_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
