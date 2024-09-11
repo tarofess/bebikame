@@ -1,5 +1,4 @@
-// game_viewmodel.dart
-
+import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
 import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/service/timer_service.dart';
@@ -7,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameViewModel {
-  final TimerService _timerService = TimerService();
+  final _timerService = getIt<TimerService>();
 
   ValueNotifier<int> get remainingTime => _timerService.remainingTime;
 
