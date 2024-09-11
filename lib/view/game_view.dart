@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
@@ -31,21 +29,22 @@ class GameView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vm = ref.watch(gameViewModel);
     final index = ref.watch(selectedGameProvider);
-    final shootingTime = useState<int?>(0);
-    final timer = useState<Timer?>(null);
 
     useEffect(() {
       try {
         vm.startRecording(
-            shootingTime, _sharedPrefService, _videoService, timer, () async {
-          await LoadingOverlay.of(context).during(() async {
-            final videoPath = await _videoService.stopRecording();
-            if (context.mounted) {
-              _navigationService.pushAndRemoveUntil(
-                  context, VideoPreviewView(videoPath: videoPath));
-            }
-          });
-        });
+          _sharedPrefService,
+          _videoService,
+          () async {
+            await LoadingOverlay.of(context).during(() async {
+              final videoPath = await _videoService.stopRecording();
+              if (context.mounted) {
+                _navigationService.pushAndRemoveUntil(
+                    context, VideoPreviewView(videoPath: videoPath));
+              }
+            });
+          },
+        );
       } catch (e) {
         if (context.mounted) {
           _dialogService.showErrorDialog(
@@ -57,7 +56,7 @@ class GameView extends HookConsumerWidget {
         }
       }
       return () {
-        vm.cleanUp(_videoService, timer);
+        vm.cleanUp(_videoService);
       };
     }, []);
 
@@ -73,13 +72,13 @@ class GameView extends HookConsumerWidget {
             5 => MusicGame(),
             _ => const Text('なし'),
           },
-          _buildCountdownText(shootingTime),
+          _buildCountdownText(vm.remainingTime),
         ],
       ),
     );
   }
 
-  Widget _buildCountdownText(ValueNotifier<int?> shootingTime) {
+  Widget _buildCountdownText(ValueNotifier<int> remainingTime) {
     return Positioned(
       bottom: 20,
       right: 20,
@@ -97,12 +96,17 @@ class GameView extends HookConsumerWidget {
             ),
           ],
         ),
-        child: Text(
-          (shootingTime.value ?? 0).toString(),
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+        child: ValueListenableBuilder<int>(
+          valueListenable: remainingTime,
+          builder: (context, value, child) {
+            return Text(
+              value.toString(),
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          },
         ),
       ),
     );
