@@ -1,10 +1,14 @@
+import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
+import 'package:bebikame/service/dialog_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BubbleGame extends HookWidget {
-  const BubbleGame({super.key});
+  final dialogService = getIt<DialogService>();
+
+  BubbleGame({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +23,14 @@ class BubbleGame extends HookWidget {
     }, []);
 
     Future<void> playSound() async {
-      await audioService.stop('bubble/bubble');
-      await audioService.play('bubble/bubble');
+      try {
+        await audioService.stop('bubble/bubble');
+        await audioService.play('bubble/bubble');
+      } catch (e) {
+        if (context.mounted) {
+          dialogService.showErrorDialog(context, e.toString());
+        }
+      }
     }
 
     void toggleVisibility(ValueNotifier<bool> visibility,

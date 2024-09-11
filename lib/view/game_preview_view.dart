@@ -51,12 +51,12 @@ class GamePreviewView extends ConsumerWidget {
       ),
       body: Center(
         child: switch (index) {
-          0 => const AnimalGame(),
-          1 => const VehicleGame(),
-          2 => const BubbleGame(),
-          3 => const NightGame(),
-          4 => const FireworksGame(),
-          5 => const MusicGame(),
+          0 => AnimalGame(),
+          1 => VehicleGame(),
+          2 => BubbleGame(),
+          3 => NightGame(),
+          4 => FireworksGame(),
+          5 => MusicGame(),
           _ => const Text('なし'),
         },
       ),

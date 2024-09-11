@@ -79,7 +79,13 @@ class VideoPreviewView extends HookConsumerWidget {
           IconButton(
             icon: const Icon(Icons.exit_to_app),
             onPressed: () async {
-              await _returnToGameSelectionView(context);
+              try {
+                await _returnToGameSelectionView(context);
+              } catch (e) {
+                if (context.mounted) {
+                  await _dialogService.showErrorDialog(context, e.toString());
+                }
+              }
             },
           ),
         ],
@@ -94,9 +100,8 @@ class VideoPreviewView extends HookConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _togglePlayButton(videoPlayerController, isVideoPlaying);
-        },
+        onPressed: () =>
+            _togglePlayButton(videoPlayerController, isVideoPlaying),
         child: Icon(
           isVideoPlaying.value ? Icons.pause : Icons.play_arrow,
         ),
@@ -146,7 +151,7 @@ class VideoPreviewView extends HookConsumerWidget {
         context, '確認', 'ゲーム選択画面に戻りますか？', 'はい', 'いいえ');
     if (!result) return;
 
-    _audioService.fadeInStart('bgm');
+    await _audioService.fadeInStart('bgm');
     if (context.mounted) {
       _navigationService.pushAndRemoveUntil(context, GameSelectionView());
     }

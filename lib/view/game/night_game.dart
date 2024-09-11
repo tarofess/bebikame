@@ -1,10 +1,14 @@
+import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
+import 'package:bebikame/service/dialog_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NightGame extends HookWidget {
-  const NightGame({super.key});
+  final dialogService = getIt<DialogService>();
+
+  NightGame({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +32,25 @@ class NightGame extends HookWidget {
       });
     }
 
-    void playSound(String fileName) async {
-      await audioService.stop('night/$fileName');
-      await audioService.play('night/$fileName');
+    Future<void> playSound(String fileName) async {
+      try {
+        await audioService.stop('night/$fileName');
+        await audioService.play('night/$fileName');
+      } catch (e) {
+        if (context.mounted) {
+          dialogService.showErrorDialog(context, e.toString());
+        }
+      }
     }
 
-    void playMoonSound(String fileName) {
-      moonAudioService.play('night/$fileName');
+    Future<void> playMoonSound(String fileName) async {
+      try {
+        await moonAudioService.play('night/$fileName');
+      } catch (e) {
+        if (context.mounted) {
+          dialogService.showErrorDialog(context, e.toString());
+        }
+      }
     }
 
     return Stack(children: [
