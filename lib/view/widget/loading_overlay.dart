@@ -1,3 +1,4 @@
+import 'package:bebikame/view/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 
 class LoadingOverlay {
@@ -15,27 +16,7 @@ class LoadingOverlay {
     if (!_isLoading) {
       _isLoading = true;
       _overlay = OverlayEntry(
-        builder: (context) => Stack(
-          children: [
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              width: double.infinity,
-              height: double.infinity,
-            ),
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).colorScheme.inversePrimary,
-                ),
-              ),
-            ),
-          ],
-        ),
+        builder: (context) => const LoadingIndicator(),
       );
       Overlay.of(_context).insert(_overlay!);
     }

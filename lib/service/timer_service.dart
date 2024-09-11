@@ -25,9 +25,4 @@ class TimerService {
     _timer?.cancel();
     _timer = null;
   }
-
-  void dispose() {
-    stopTimer();
-    _remainingTime.dispose();
-  }
 }
