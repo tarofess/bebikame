@@ -90,11 +90,7 @@ class VideoPreviewView extends HookConsumerWidget {
               ? const Text('動画が見つかりません')
               : !isInitialized.value
                   ? const CircularProgressIndicator()
-                  : Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.rotationX(3.14159),
-                      child: VideoPlayer(videoPlayerController.value!),
-                    ),
+                  : VideoPlayer(videoPlayerController.value!),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -115,7 +111,7 @@ class VideoPreviewView extends HookConsumerWidget {
 
     if (context.mounted) {
       await LoadingOverlay.of(context).during(
-        () => Future.delayed(const Duration(seconds: 2)),
+        () => Future.delayed(const Duration(seconds: 1)),
       );
       if (context.mounted) {
         _navigationService.pushReplacementWithAnimationFromBottom(

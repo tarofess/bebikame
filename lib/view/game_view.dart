@@ -12,6 +12,7 @@ import 'package:bebikame/view/game/music_game.dart';
 import 'package:bebikame/view/game/night_game.dart';
 import 'package:bebikame/view/game/vehicle_game.dart';
 import 'package:bebikame/view/video_preview_view.dart';
+import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/viewmodel/game_viewmodel.dart';
 import 'package:bebikame/viewmodel/provider/selected_game_provider.dart';
 import 'package:flutter/material.dart';
@@ -37,11 +38,13 @@ class GameView extends HookConsumerWidget {
       try {
         vm.startRecording(
             shootingTime, _sharedPrefService, _videoService, timer, () async {
-          final videoPath = await _videoService.stopRecording();
-          if (context.mounted) {
-            _navigationService.pushAndRemoveUntil(
-                context, VideoPreviewView(videoPath: videoPath));
-          }
+          await LoadingOverlay.of(context).during(() async {
+            final videoPath = await _videoService.stopRecording();
+            if (context.mounted) {
+              _navigationService.pushAndRemoveUntil(
+                  context, VideoPreviewView(videoPath: videoPath));
+            }
+          });
         });
       } catch (e) {
         if (context.mounted) {

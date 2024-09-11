@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -46,8 +48,9 @@ class VideoService {
 
     try {
       final file = await controller!.stopVideoRecording();
+      final rotatedVideoPath = await _rotateVideo180Degrees(file.path);
       isRecording = false;
-      return file.path;
+      return rotatedVideoPath;
     } catch (e) {
       throw Exception('動画撮影の停止に失敗しました: $e');
     }
@@ -85,6 +88,36 @@ class VideoService {
       }
     } catch (e) {
       throw Exception('動画の保存に失敗しました。');
+    }
+  }
+
+  Future<String?> _rotateVideo180Degrees(String inputPath) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final outputPath =
+          '${directory.path}/rotated_video_${DateTime.now().millisecondsSinceEpoch}.mp4';
+
+      final command = '-i $inputPath '
+          '-vf "transpose=2,transpose=2" '
+          '-c:v h264 '
+          '-b:v 2M '
+          '-maxrate 2M '
+          '-bufsize 1M '
+          '-c:a copy '
+          '-metadata:s:v:0 rotate=0 '
+          '-movflags +faststart '
+          '$outputPath';
+
+      final session = await FFmpegKit.execute(command);
+      final returnCode = await session.getReturnCode();
+
+      if (ReturnCode.isSuccess(returnCode)) {
+        return outputPath;
+      } else {
+        throw Exception('撮影された動画の調整中にエラーが発生しました。');
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 
