@@ -116,7 +116,7 @@ class VideoPreviewView extends HookConsumerWidget {
 
     if (context.mounted) {
       await LoadingOverlay.of(context).during(
-        () => Future.delayed(const Duration(seconds: 1)),
+        () => _videoService.initializeCamera(),
       );
       if (context.mounted) {
         _navigationService.pushReplacementWithAnimationFromBottom(

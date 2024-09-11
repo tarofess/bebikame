@@ -3,6 +3,7 @@ import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/service/permission_handler_service.dart';
+import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/view/game/animal_game.dart';
 import 'package:bebikame/view/game/bubble_game.dart';
 import 'package:bebikame/view/game/fireworks_game.dart';
@@ -64,6 +65,7 @@ class GamePreviewView extends ConsumerWidget {
   }
 
   Future<void> _handleStartRecordingButtonPress(BuildContext context) async {
+    final videoService = getIt<VideoService>();
     final result = await _dialogService.showConfirmationDialog(
         context, 'ゲーム開始', 'このゲームで録画を開始しますか？', '開始する', 'キャンセル');
     if (!result) return;
@@ -74,9 +76,12 @@ class GamePreviewView extends ConsumerWidget {
     if (isAllPermissionsGranted) {
       if (context.mounted) {
         await LoadingOverlay.of(context).during(
-          () => Future.delayed(const Duration(seconds: 2)),
+          () async {
+            await videoService.initializeCamera();
+            await _audioService.fadeOutStop('bgm');
+          },
         );
-        await _audioService.fadeOutStop('bgm');
+
         if (context.mounted) {
           _navigationService.pushReplacementWithAnimationFromBottom(
               context, GameView());
