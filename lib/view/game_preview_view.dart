@@ -19,10 +19,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class GamePreviewView extends ConsumerWidget {
-  final _navigationService = getIt<NavigationService>();
   final _dialogService = getIt<DialogService>();
-  final _audioService = getIt<AudioService>();
-  final _permissionHandlerService = getIt<PermissionHandlerService>();
 
   GamePreviewView({super.key});
 
@@ -65,37 +62,47 @@ class GamePreviewView extends ConsumerWidget {
   }
 
   Future<void> _handleStartRecordingButtonPress(BuildContext context) async {
-    final videoService = getIt<VideoService>();
     final result = await _dialogService.showConfirmationDialog(
         context, 'ゲーム開始', 'このゲームで録画を開始しますか？', '開始する', 'キャンセル');
     if (!result) return;
 
-    bool isAllPermissionsGranted =
-        await _permissionHandlerService.requestPermissions();
+    if (context.mounted) await _prepareRecording(context);
+  }
+
+  Future<void> _prepareRecording(BuildContext context) async {
+    final permissionHandlerService = getIt<PermissionHandlerService>();
+    final isAllPermissionsGranted =
+        await permissionHandlerService.requestPermissions();
 
     if (isAllPermissionsGranted) {
-      if (context.mounted) {
-        await LoadingOverlay.of(context).during(
-          () async {
-            await videoService.initializeCamera();
-            await _audioService.fadeOutStop('bgm');
-          },
-        );
-
-        if (context.mounted) {
-          _navigationService.pushReplacementWithAnimationFromBottom(
-              context, GameView());
-        }
-      }
+      if (context.mounted) await handlePermissionGranted(context);
     } else {
-      if (context.mounted) {
-        await _dialogService.showErrorDialog(
-          context,
-          'カメラ、マイク、フォトライブラリへのアクセスが全て許可されていません。\n'
-          '動画を撮影するために設定から全てのアクセスを許可してください。',
-        );
-        openAppSettings();
-      }
+      if (context.mounted) await handlePermissionDenied(context);
     }
+  }
+
+  Future<void> handlePermissionGranted(BuildContext context) async {
+    final videoService = getIt<VideoService>();
+    final audioService = getIt<AudioService>();
+    final navigationService = getIt<NavigationService>();
+    await LoadingOverlay.of(context).during(
+      () async {
+        await videoService.initializeCamera();
+        await audioService.fadeOutStop('bgm');
+      },
+    );
+    if (context.mounted) {
+      navigationService.pushReplacementWithAnimationFromBottom(
+          context, GameView());
+    }
+  }
+
+  Future<void> handlePermissionDenied(BuildContext context) async {
+    await _dialogService.showErrorDialog(
+      context,
+      'カメラ、マイク、フォトライブラリへのアクセスが全て許可されていません。\n'
+      '動画を撮影するために設定から全てのアクセスを許可してください。',
+    );
+    openAppSettings();
   }
 }
