@@ -1,10 +1,10 @@
 import 'package:bebikame/config/get_it.dart';
-import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/config/theme.dart';
+import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/view/game_selection_view.dart';
+import 'package:bebikame/viewmodel/provider/initialize_app_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -19,33 +19,53 @@ void main() async {
   ]);
 
   setupGetIt();
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 
   FlutterNativeSplash.remove();
 }
 
-class MyApp extends HookConsumerWidget {
-  final audioService = getIt<AudioService>();
-
-  MyApp({super.key});
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    useEffect(() {
-      audioService.play('bgm', loop: true, volume: 0.3);
-      return () {};
-    }, []);
+    return MaterialApp(
+      theme: createTheme(),
+      home: ScreenUtilInit(
+        designSize: const Size(690, 360),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return Consumer(
+            builder: (context, ref, _) {
+              final initializeApp = ref.watch(initializeAppProvider);
 
-    return ScreenUtilInit(
-      designSize: const Size(690, 360),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return MaterialApp(
-          theme: createTheme(),
-          home: GameSelectionView(),
-        );
-      },
+              return initializeApp.when(
+                data: (_) => GameSelectionView(),
+                loading: () {
+                  return Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: Colors.white,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                    ),
+                  );
+                },
+                error: (e, _) {
+                  final dialogService = getIt<DialogService>();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    dialogService.showErrorDialog(context, e.toString());
+                  });
+                  return GameSelectionView();
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
