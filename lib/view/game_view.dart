@@ -23,7 +23,6 @@ class GameView extends HookConsumerWidget {
   final _navigationService = getIt<NavigationService>();
   final _videoService = getIt<VideoService>();
   final _dialogService = getIt<DialogService>();
-  final _timerService = getIt<TimerService>();
   final _audioService = getIt<AudioService>();
 
   GameView({super.key});
@@ -80,8 +79,9 @@ class GameView extends HookConsumerWidget {
           },
           startRecording.when(
             data: (shootingTime) {
-              _timerService.startCountdown(shootingTime, stopRecording);
-              return _buildCountdownText(_timerService.remainingTime);
+              final timerService = getIt<TimerService>();
+              timerService.startCountdown(shootingTime, stopRecording);
+              return _buildCountdownText(timerService.remainingTime);
             },
             loading: () => const LoadingIndicator(),
             error: (e, _) {

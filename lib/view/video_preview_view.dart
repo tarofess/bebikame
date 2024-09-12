@@ -16,7 +16,6 @@ class VideoPreviewView extends HookConsumerWidget {
   final String? _videoPath;
   final _navigationService = getIt<NavigationService>();
   final _dialogService = getIt<DialogService>();
-  final _audioService = getIt<AudioService>();
   final _videoService = getIt<VideoService>();
 
   VideoPreviewView({super.key, required String? videoPath})
@@ -151,7 +150,8 @@ class VideoPreviewView extends HookConsumerWidget {
         context, '確認', 'ゲーム選択画面に戻りますか？', 'はい', 'いいえ');
     if (!result) return;
 
-    await _audioService.fadeInStart('bgm');
+    final audioService = getIt<AudioService>();
+    await audioService.fadeInStart('bgm');
     if (context.mounted) {
       _navigationService.pushAndRemoveUntil(context, GameSelectionView());
     }

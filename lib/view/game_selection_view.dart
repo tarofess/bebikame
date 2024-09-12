@@ -11,10 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameSelectionView extends ConsumerWidget {
-  final _navigationService = getIt<NavigationService>();
   final _dialogService = getIt<DialogService>();
-  final _audioService = getIt<AudioService>();
-  final _sharedPrefService = getIt<SharedPreferencesService>();
 
   GameSelectionView({super.key});
 
@@ -31,7 +28,7 @@ class GameSelectionView extends ConsumerWidget {
             icon: const Icon(Icons.settings),
             onPressed: () async {
               try {
-                await _handleSettingButtonPress(context, _sharedPrefService);
+                await _handleSettingButtonPress(context);
               } catch (e) {
                 if (context.mounted) {
                   _dialogService.showErrorDialog(context, e.toString());
@@ -76,15 +73,17 @@ class GameSelectionView extends ConsumerWidget {
 
   Future<void> _handleGridTilePress(
       BuildContext context, WidgetRef ref, int index) async {
-    await _audioService.play('button_tap');
+    final navigationService = getIt<NavigationService>();
+    final audioService = getIt<AudioService>();
+    await audioService.play('button_tap');
     ref.read(selectedGameProvider.notifier).state = index;
     if (context.mounted) {
-      _navigationService.push(context, GamePreviewView());
+      navigationService.push(context, GamePreviewView());
     }
   }
 
-  Future<void> _handleSettingButtonPress(
-      BuildContext context, SharedPreferencesService sharedPrefService) async {
+  Future<void> _handleSettingButtonPress(BuildContext context) async {
+    final sharedPrefService = getIt<SharedPreferencesService>();
     final savedShootingTime = await sharedPrefService.getShootingTime();
     if (context.mounted) {
       final result =
