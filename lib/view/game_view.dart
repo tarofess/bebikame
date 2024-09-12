@@ -47,20 +47,11 @@ class GameView extends HookConsumerWidget {
                 context, VideoPreviewView(videoPath: videoPath));
           }
         });
-      } catch (recordingError) {
+      } catch (e) {
         try {
-          await _audioService.fadeInStart('bgm');
-          if (context.mounted) {
-            _navigationService.pop(context);
-            _dialogService.showErrorDialog(
-                context, '$recordingError\nゲーム選択画面に戻ります。');
-          }
-        } catch (audioError) {
-          if (context.mounted) {
-            _navigationService.pop(context);
-            _dialogService.showErrorDialog(
-                context, '$audioError\nゲーム選択画面に戻ります。');
-          }
+          if (context.mounted) await _goBackWithBGMFadeIn(context, e);
+        } catch (e) {
+          if (context.mounted) _goBack(context, e);
         }
       }
     }
@@ -87,18 +78,9 @@ class GameView extends HookConsumerWidget {
             error: (e, _) {
               WidgetsBinding.instance.addPostFrameCallback((_) async {
                 try {
-                  await _audioService.fadeInStart('bgm');
-                  if (context.mounted) {
-                    _navigationService.pop(context);
-                    _dialogService.showErrorDialog(
-                        context, '$e\nゲーム選択画面に戻ります。');
-                  }
+                  await _goBackWithBGMFadeIn(context, e);
                 } catch (audioError) {
-                  if (context.mounted) {
-                    _navigationService.pop(context);
-                    _dialogService.showErrorDialog(
-                        context, '$audioError\nゲーム選択画面に戻ります。');
-                  }
+                  if (context.mounted) _goBack(context, e);
                 }
               });
               return const SizedBox();
@@ -141,5 +123,15 @@ class GameView extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _goBackWithBGMFadeIn(BuildContext context, Object e) async {
+    await _audioService.fadeInStart('bgm');
+    if (context.mounted) _goBack(context, e);
+  }
+
+  void _goBack(BuildContext context, Object e) {
+    _navigationService.pop(context);
+    _dialogService.showErrorDialog(context, '$e\nゲーム選択画面に戻ります。');
   }
 }
