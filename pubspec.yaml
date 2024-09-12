@@ -233,7 +233,7 @@ flutter:
   fonts:
     - family: HachiMaruPop
       fonts:
-        - asset: fonts/HachiMaruPop-Regular.ttf
+        - asset: assets/fonts/HachiMaruPop-Regular.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

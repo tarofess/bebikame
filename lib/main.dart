@@ -36,32 +36,28 @@ class MyApp extends ConsumerWidget {
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, child) {
-          return Consumer(
-            builder: (context, ref, _) {
-              final initializeApp = ref.watch(initializeAppProvider);
+          final initializeApp = ref.watch(initializeAppProvider);
 
-              return initializeApp.when(
-                data: (_) => GameSelectionView(),
-                loading: () {
-                  return Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    color: Colors.white,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                      ),
-                    ),
-                  );
-                },
-                error: (e, _) {
-                  final dialogService = getIt<DialogService>();
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    dialogService.showErrorDialog(context, e.toString());
-                  });
-                  return GameSelectionView();
-                },
+          return initializeApp.when(
+            data: (_) => GameSelectionView(),
+            loading: () {
+              return Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.white,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+                ),
               );
+            },
+            error: (e, _) {
+              final dialogService = getIt<DialogService>();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                dialogService.showErrorDialog(context, e.toString());
+              });
+              return GameSelectionView();
             },
           );
         },
