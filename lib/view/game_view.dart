@@ -1,4 +1,5 @@
 import 'package:bebikame/config/get_it.dart';
+import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/timer_service.dart';
 import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
@@ -23,6 +24,7 @@ class GameView extends HookConsumerWidget {
   final _videoService = getIt<VideoService>();
   final _dialogService = getIt<DialogService>();
   final _timerService = getIt<TimerService>();
+  final _audioService = getIt<AudioService>();
 
   GameView({super.key});
 
@@ -36,6 +38,33 @@ class GameView extends HookConsumerWidget {
         _videoService.dispose();
       };
     }, []);
+
+    Future<void> stopRecording() async {
+      try {
+        await LoadingOverlay.of(context).during(() async {
+          final videoPath = await _videoService.stopRecording();
+          if (context.mounted) {
+            _navigationService.pushAndRemoveUntil(
+                context, VideoPreviewView(videoPath: videoPath));
+          }
+        });
+      } catch (recordingError) {
+        try {
+          await _audioService.fadeInStart('bgm');
+          if (context.mounted) {
+            _navigationService.pop(context);
+            _dialogService.showErrorDialog(
+                context, '$recordingError\nゲーム選択画面に戻ります。');
+          }
+        } catch (audioError) {
+          if (context.mounted) {
+            _navigationService.pop(context);
+            _dialogService.showErrorDialog(
+                context, '$audioError\nゲーム選択画面に戻ります。');
+          }
+        }
+      }
+    }
 
     return Scaffold(
       body: Stack(
@@ -51,21 +80,27 @@ class GameView extends HookConsumerWidget {
           },
           startRecording.when(
             data: (shootingTime) {
-              _timerService.startCountdown(shootingTime, () async {
-                await LoadingOverlay.of(context).during(() async {
-                  final videoPath = await _videoService.stopRecording();
-                  if (context.mounted) {
-                    _navigationService.pushAndRemoveUntil(
-                        context, VideoPreviewView(videoPath: videoPath));
-                  }
-                });
-              });
+              _timerService.startCountdown(shootingTime, stopRecording);
               return _buildCountdownText(_timerService.remainingTime);
             },
             loading: () => const LoadingIndicator(),
             error: (e, _) {
-              _dialogService.showErrorDialog(context, e.toString());
-              if (context.mounted) _navigationService.pop(context);
+              WidgetsBinding.instance.addPostFrameCallback((_) async {
+                try {
+                  await _audioService.fadeInStart('bgm');
+                  if (context.mounted) {
+                    _navigationService.pop(context);
+                    _dialogService.showErrorDialog(
+                        context, '$e\nゲーム選択画面に戻ります。');
+                  }
+                } catch (audioError) {
+                  if (context.mounted) {
+                    _navigationService.pop(context);
+                    _dialogService.showErrorDialog(
+                        context, '$audioError\nゲーム選択画面に戻ります。');
+                  }
+                }
+              });
               return const SizedBox();
             },
           ),
