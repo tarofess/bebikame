@@ -6,7 +6,7 @@ class SharedPreferencesService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getInt('shooting_time');
     } catch (e) {
-      throw Exception('設定の取得中にエラーが発生しました。');
+      throw Exception('設定の取得中にエラーが発生しました。予期せぬエラーです。');
     }
   }
 
@@ -15,7 +15,7 @@ class SharedPreferencesService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt('shooting_time', shootingTime);
     } catch (e) {
-      throw Exception('設定の保存中にエラーが発生しました。');
+      throw Exception('設定の保存中にエラーが発生しました。\n再度お試しください。');
     }
   }
 }

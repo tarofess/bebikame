@@ -28,7 +28,7 @@ class VideoService {
       await controller!.initialize();
       controller!.lockCaptureOrientation(DeviceOrientation.landscapeRight);
     } catch (e) {
-      throw Exception('カメラの初期化に失敗しました。');
+      throw Exception('カメラの初期化に失敗しました。\n再度お試しください。');
     }
   }
 
@@ -39,7 +39,7 @@ class VideoService {
       await controller!.startVideoRecording();
       isRecording = true;
     } catch (e) {
-      throw Exception('動画撮影の開始に失敗しました。');
+      throw Exception('動画撮影の開始に失敗しました。\n再度お試しください。');
     }
   }
 
@@ -52,7 +52,7 @@ class VideoService {
       isRecording = false;
       return rotatedVideoPath;
     } catch (e) {
-      throw Exception('動画撮影の停止に失敗しました: $e');
+      throw Exception('撮影された動画を処理している間にエラーが発生しました。');
     }
   }
 
@@ -73,7 +73,7 @@ class VideoService {
           '${directory.path}/bebikame_video_${DateTime.now().millisecondsSinceEpoch}.mp4';
       await File(videoPath).copy(savedVideoPath);
     } catch (e) {
-      throw Exception('動画の保存に失敗しました。');
+      throw Exception('動画の保存に失敗しました。\n端末の容量などを確認して再度お試しください。');
     }
   }
 
@@ -84,10 +84,10 @@ class VideoService {
         name: "bebikame_video_${DateTime.now().millisecondsSinceEpoch}.mp4",
       );
       if (!result['isSuccess']) {
-        throw Exception('動画の保存に失敗しました。');
+        throw Exception('動画の保存に失敗しました。\n端末の容量などを確認して再度お試しください。');
       }
     } catch (e) {
-      throw Exception('動画の保存に失敗しました。');
+      throw Exception('動画の保存に失敗しました。\n端末の容量などを確認して再度お試しください。');
     }
   }
 
@@ -114,7 +114,7 @@ class VideoService {
       if (ReturnCode.isSuccess(returnCode)) {
         return outputPath;
       } else {
-        throw Exception('撮影された動画の調整中にエラーが発生しました。');
+        throw Exception('動画の処理に失敗しました。');
       }
     } catch (e) {
       rethrow;

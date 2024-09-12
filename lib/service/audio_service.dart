@@ -12,7 +12,7 @@ class AudioService {
         await player.setSource(AssetSource('sounds/$fileName.mp3'));
         _audioPlayers[fileName] = player;
       } catch (e) {
-        throw Exception('音声の読み込み中にエラーが発生しました。');
+        throw Exception('音声の読み込み中にエラーが発生しました。\n音声を再生できません。');
       }
     }
   }
@@ -29,7 +29,7 @@ class AudioService {
       player.setVolume(volume);
       await player.resume();
     } catch (e) {
-      throw Exception('音声の再生中にエラーが発生しました。');
+      throw Exception('音声の再生中にエラーが発生しました。\n音声を再生できません。');
     }
   }
 
@@ -39,7 +39,7 @@ class AudioService {
         await _audioPlayers[fileName]!.stop();
       }
     } catch (e) {
-      throw Exception('音声の停止中にエラーが発生しました。');
+      throw Exception('音声の停止中にエラーが発生しました。\n音声を停止できません。');
     }
   }
 
@@ -64,7 +64,7 @@ class AudioService {
       await player.pause();
       await player.setVolume(originalVolume);
     } catch (e) {
-      throw Exception('音声の停止中にエラーが発生しました。');
+      throw Exception('音声の停止中にエラーが発生しました。\n音声を停止できません。');
     }
   }
 
@@ -91,7 +91,7 @@ class AudioService {
 
       await player.setVolume(targetVolume);
     } catch (e) {
-      throw Exception('音声の開始中にエラーが発生しました。');
+      throw Exception('音声の開始中にエラーが発生しました。\n音声を再生できません。');
     }
   }
 
@@ -101,7 +101,7 @@ class AudioService {
         await _audioPlayers[fileName]!.pause();
       }
     } catch (e) {
-      throw Exception('音声の一時停止中にエラーが発生しました。');
+      throw Exception('音声の一時停止中にエラーが発生しました。\n音声を停止できません。');
     }
   }
 
@@ -111,7 +111,7 @@ class AudioService {
         await _audioPlayers[fileName]!.resume();
       }
     } catch (e) {
-      throw Exception('音声の再開中にエラーが発生しました。');
+      throw Exception('音声の再開中にエラーが発生しました。\n音声を再生できません。');
     }
   }
 
@@ -121,7 +121,7 @@ class AudioService {
         await _audioPlayers[fileName]!.setVolume(volume);
       }
     } catch (e) {
-      throw Exception('音量の設定中にエラーが発生しました。');
+      throw Exception('音量の設定中にエラーが発生しました。\n音量を設定できません。');
     }
   }
 

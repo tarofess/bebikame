@@ -19,7 +19,7 @@ class PermissionHandlerService {
         return false;
       }
     } catch (e) {
-      throw Exception('権限の設定中に予期せぬエラーが発生しました。');
+      throw Exception('権限の設定中に予期せぬエラーが発生しました。\nもう一度権限の設定をお試しください。');
     }
   }
 }
