@@ -58,7 +58,7 @@ class MusicGame extends HookWidget {
               image: Image.asset('assets/images/music/bg_music.jpg').image,
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
-                Colors.white.withOpacity(0.5),
+                Colors.white.withOpacity(0.9),
                 BlendMode.dstATop,
               ),
             ),
