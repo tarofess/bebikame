@@ -47,5 +47,7 @@
     <string>動画の音声を録音するためにマイクへのアクセスが必要です。</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>動画を保存するためにフォトライブラリへのアクセスが必要です。</string>
+    <key>SKPaymentTransactionObserverUsageDescription</key>
+    <string>有料コンテンツの購入を可能にし、新しいゲームを購入できるようにします。</string>
 </dict>
 </plist>
