@@ -15,6 +15,10 @@ class InAppPurchaseService {
 
   List<ProductDetails> get products => _products;
 
+  final StreamController<bool> _purchaseResultController =
+      StreamController<bool>.broadcast();
+  Stream<bool> get purchaseResultStream => _purchaseResultController.stream;
+
   Future<void> initialize() async {
     _isAvailable = await _inAppPurchase.isAvailable();
     if (!_isAvailable) {
@@ -63,25 +67,33 @@ class InAppPurchaseService {
   }
 
   Future<void> _getIOSPastPurchases() async {
-    // iOS では `restorePurchases()` を使用
     await _inAppPurchase.restorePurchases();
   }
 
-  Future<void> buyProduct(ProductDetails product) async {
+  Future<bool> buyProduct(ProductDetails product) async {
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
-    await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+    try {
+      final bool success = await InAppPurchase.instance
+          .buyNonConsumable(purchaseParam: purchaseParam);
+      return success;
+    } catch (e) {
+      print('購入エラー: $e');
+      return false;
+    }
   }
 
   void _onPurchaseUpdate(List<PurchaseDetails> purchaseDetailsList) {
     for (var purchaseDetails in purchaseDetailsList) {
       if (purchaseDetails.status == PurchaseStatus.pending) {
         // 保留中の購入処理
+      } else if (purchaseDetails.status == PurchaseStatus.canceled) {
+        _purchaseResultController.add(false);
       } else if (purchaseDetails.status == PurchaseStatus.error) {
-        // エラー処理
+        _purchaseResultController.add(false);
       } else if (purchaseDetails.status == PurchaseStatus.purchased ||
           purchaseDetails.status == PurchaseStatus.restored) {
-        // 購入または復元された商品の処理
         _verifyPurchase(purchaseDetails);
+        _purchaseResultController.add(true);
       }
 
       if (purchaseDetails.pendingCompletePurchase) {
@@ -101,9 +113,12 @@ class InAppPurchaseService {
 
   void _updateStreamOnError(dynamic error) {
     // エラー処理
+    print('購入ストリームエラー: $error');
+    _purchaseResultController.add(false);
   }
 
   void dispose() {
     _subscription.cancel();
+    _purchaseResultController.close();
   }
 }

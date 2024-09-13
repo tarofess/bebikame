@@ -1,10 +1,12 @@
 import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
+import 'package:bebikame/service/in_app_purchase_service.dart';
 import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
 import 'package:bebikame/view/game_preview_view.dart';
 import 'package:bebikame/view/widget/game_card.dart';
+import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/viewmodel/provider/game_provider.dart';
 import 'package:bebikame/viewmodel/provider/selected_game_provider.dart';
 import 'package:flutter/material.dart';
@@ -73,6 +75,17 @@ class GameSelectionView extends ConsumerWidget {
 
   Future<void> _handleGridTilePress(
       BuildContext context, WidgetRef ref, int index) async {
+    bool canPlayGame = true;
+
+    if (index == 4 || index == 5) {
+      canPlayGame =
+          await LoadingOverlay.of(context).during(_handleInAppPurchase);
+    }
+
+    if (!canPlayGame) {
+      return;
+    }
+
     final navigationService = getIt<NavigationService>();
     final audioService = getIt<AudioService>();
     await audioService.play('button_tap');
@@ -92,5 +105,19 @@ class GameSelectionView extends ConsumerWidget {
         await sharedPrefService.saveShootingTime(result);
       }
     }
+  }
+
+  Future<bool> _handleInAppPurchase() async {
+    final inAppPurchaseService = getIt<InAppPurchaseService>();
+    final purchaseStarted = await inAppPurchaseService
+        .buyProduct(inAppPurchaseService.products.first);
+
+    if (!purchaseStarted) {
+      return false;
+    }
+
+    final purchaseResult =
+        await inAppPurchaseService.purchaseResultStream.first;
+    return purchaseResult;
   }
 }
