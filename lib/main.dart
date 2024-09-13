@@ -2,6 +2,7 @@ import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/config/theme.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/view/game_selection_view.dart';
+import 'package:bebikame/view/widget/loading_indicator.dart';
 import 'package:bebikame/viewmodel/provider/initialize_app_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,16 +42,7 @@ class MyApp extends ConsumerWidget {
           return initializeApp.when(
             data: (_) => GameSelectionView(),
             loading: () {
-              return Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: Colors.white,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: Theme.of(context).colorScheme.inversePrimary,
-                  ),
-                ),
-              );
+              return const Scaffold(body: LoadingIndicator());
             },
             error: (e, _) {
               final dialogService = getIt<DialogService>();
