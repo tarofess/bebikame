@@ -28,6 +28,7 @@ class GamePreviewView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(gameName),
         actions: [

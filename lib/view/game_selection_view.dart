@@ -24,6 +24,7 @@ class GameSelectionView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('ゲームを選んでね！'),
         actions: [
