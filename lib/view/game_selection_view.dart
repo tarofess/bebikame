@@ -81,7 +81,7 @@ class GameSelectionView extends ConsumerWidget {
       final result = await _dialogService.showConfirmationDialog(
         context,
         game.name,
-        'このゲームはロックされています。\n購入して解除しますか？',
+        'このゲームはロックされています。\n購入してロックを解除しますか？',
         '購入する',
         'キャンセル',
       );
@@ -111,23 +111,27 @@ class GameSelectionView extends ConsumerWidget {
   }
 
   Future<bool> _handleInAppPurchase(Game game, WidgetRef ref) async {
-    final purchaseStarted = await _inAppPurchaseService
-        .buyProduct(_inAppPurchaseService.getProductByName(game)!);
+    try {
+      final purchaseStarted = await _inAppPurchaseService
+          .buyProduct(_inAppPurchaseService.getProductByName(game)!);
 
-    if (!purchaseStarted) {
-      return false;
+      if (!purchaseStarted) {
+        return false;
+      }
+
+      final purchaseResult =
+          await _inAppPurchaseService.purchaseResultStream.first;
+
+      if (purchaseResult && game.name == '花火ゲーム') {
+        ref.read(gameProvider.notifier).unlockedFireWorksGame();
+      } else if (purchaseResult && game.name == '音楽ゲーム') {
+        ref.read(gameProvider.notifier).unlockedMusicGame();
+      }
+
+      return purchaseResult;
+    } catch (e) {
+      throw Exception('ゲームの購入中に予期せぬエラーが発生しました。\n再度お試しください。');
     }
-
-    final purchaseResult =
-        await _inAppPurchaseService.purchaseResultStream.first;
-
-    if (purchaseResult && game.name == '花火ゲーム') {
-      ref.read(gameProvider.notifier).unlockedFireWorksGame();
-    } else if (purchaseResult && game.name == '音楽ゲーム') {
-      ref.read(gameProvider.notifier).unlockedMusicGame();
-    }
-
-    return purchaseResult;
   }
 
   Future<void> goToGamePreviewView(
