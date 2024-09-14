@@ -13,8 +13,8 @@ import 'package:bebikame/view/game/vehicle_game.dart';
 import 'package:bebikame/view/video_preview_view.dart';
 import 'package:bebikame/view/widget/loading_indicator.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
-import 'package:bebikame/viewmodel/provider/selected_game_provider.dart';
-import 'package:bebikame/viewmodel/provider/start_recording_provider.dart';
+import 'package:bebikame/provider/game_provider.dart';
+import 'package:bebikame/provider/start_recording_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -30,7 +30,7 @@ class GameView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final startRecording = ref.watch(startRecordingProvider);
-    final index = ref.watch(selectedGameProvider);
+    final gameName = ref.read(gameProvider.notifier).getSelectedGameName();
 
     useEffect(() {
       return () {
@@ -59,13 +59,13 @@ class GameView extends HookConsumerWidget {
     return Scaffold(
       body: Stack(
         children: [
-          switch (index) {
-            0 => AnimalGame(),
-            1 => VehicleGame(),
-            2 => BubbleGame(),
-            3 => NightGame(),
-            4 => FireworksGame(),
-            5 => MusicGame(),
+          switch (gameName) {
+            '動物ゲーム' => AnimalGame(),
+            '乗り物ゲーム' => VehicleGame(),
+            'あわあわゲーム' => BubbleGame(),
+            '夜空ゲーム' => NightGame(),
+            '花火ゲーム' => FireworksGame(),
+            '音楽ゲーム' => MusicGame(),
             _ => const Text('なし'),
           },
           startRecording.when(

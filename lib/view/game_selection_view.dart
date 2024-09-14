@@ -1,4 +1,5 @@
 import 'package:bebikame/config/get_it.dart';
+import 'package:bebikame/model/game.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
@@ -7,13 +8,13 @@ import 'package:bebikame/service/shared_preferences_service.dart';
 import 'package:bebikame/view/game_preview_view.dart';
 import 'package:bebikame/view/widget/game_card.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
-import 'package:bebikame/viewmodel/provider/game_provider.dart';
-import 'package:bebikame/viewmodel/provider/selected_game_provider.dart';
+import 'package:bebikame/provider/game_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameSelectionView extends ConsumerWidget {
   final _dialogService = getIt<DialogService>();
+  final _inAppPurchaseService = getIt<InAppPurchaseService>();
 
   GameSelectionView({super.key});
 
@@ -54,10 +55,11 @@ class GameSelectionView extends ConsumerWidget {
               itemCount: game.length,
               itemBuilder: (context, index) {
                 return GameCard(
-                  imagePath: game[index]['image']!,
+                  imagePath: game[index].image,
+                  isLocked: game[index].isLocked,
                   onTap: () async {
                     try {
-                      await _handleGridTilePress(context, ref, index);
+                      await _handleGridTilePress(context, ref, game[index]);
                     } catch (e) {
                       if (context.mounted) {
                         _dialogService.showErrorDialog(context, e.toString());
@@ -74,25 +76,24 @@ class GameSelectionView extends ConsumerWidget {
   }
 
   Future<void> _handleGridTilePress(
-      BuildContext context, WidgetRef ref, int index) async {
-    bool canPlayGame = true;
+      BuildContext context, WidgetRef ref, Game game) async {
+    if (game.isLocked) {
+      final result = await _dialogService.showConfirmationDialog(
+        context,
+        game.name,
+        'このゲームはロックされています。\n購入して解除しますか？',
+        '購入する',
+        'キャンセル',
+      );
+      if (!result) return;
 
-    if (index == 4 || index == 5) {
-      canPlayGame =
-          await LoadingOverlay.of(context).during(_handleInAppPurchase);
+      if (context.mounted) {
+        await LoadingOverlay.of(context)
+            .during(() => _handleInAppPurchase(game, ref));
+      }
     }
 
-    if (!canPlayGame) {
-      return;
-    }
-
-    final navigationService = getIt<NavigationService>();
-    final audioService = getIt<AudioService>();
-    await audioService.play('button_tap');
-    ref.read(selectedGameProvider.notifier).state = index;
-    if (context.mounted) {
-      navigationService.push(context, GamePreviewView());
-    }
+    if (context.mounted) await goToGamePreviewView(context, ref, game);
   }
 
   Future<void> _handleSettingButtonPress(BuildContext context) async {
@@ -107,17 +108,34 @@ class GameSelectionView extends ConsumerWidget {
     }
   }
 
-  Future<bool> _handleInAppPurchase() async {
-    final inAppPurchaseService = getIt<InAppPurchaseService>();
-    final purchaseStarted = await inAppPurchaseService
-        .buyProduct(inAppPurchaseService.products.first);
+  Future<bool> _handleInAppPurchase(Game game, WidgetRef ref) async {
+    final purchaseStarted = await _inAppPurchaseService
+        .buyProduct(_inAppPurchaseService.getProductByName(game)!);
 
     if (!purchaseStarted) {
       return false;
     }
 
     final purchaseResult =
-        await inAppPurchaseService.purchaseResultStream.first;
+        await _inAppPurchaseService.purchaseResultStream.first;
+
+    if (purchaseResult && game.name == '花火ゲーム') {
+      ref.read(gameProvider.notifier).unlockedFireWorksGame();
+    } else if (purchaseResult && game.name == '音楽ゲーム') {
+      ref.read(gameProvider.notifier).unlockedMusicGame();
+    }
+
     return purchaseResult;
+  }
+
+  Future<void> goToGamePreviewView(
+      BuildContext context, WidgetRef ref, Game game) async {
+    final navigationService = getIt<NavigationService>();
+    final audioService = getIt<AudioService>();
+    await audioService.play('button_tap');
+    ref.read(gameProvider.notifier).updateGameSelected(game.name);
+    if (context.mounted) {
+      navigationService.push(context, GamePreviewView());
+    }
   }
 }

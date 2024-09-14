@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bebikame/config/env/env.dart';
+import 'package:bebikame/model/game.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
@@ -8,12 +9,14 @@ class InAppPurchaseService {
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<ProductDetails> _products = [];
-  final List<String> _productIds = [Env.product_id];
+  final List<String> _productIds = [Env.fireworksGame, Env.musicGame];
+  final List<String> _purchasedProductIds = []; // 追加：購入済み製品IDのリスト
 
   bool _isAvailable = false;
   bool get isAvailable => _isAvailable;
 
   List<ProductDetails> get products => _products;
+  List<String> get purchasedProductIds => _purchasedProductIds; // 追加：ゲッター
 
   final StreamController<bool> _purchaseResultController =
       StreamController<bool>.broadcast();
@@ -46,6 +49,15 @@ class InAppPurchaseService {
     _products = response.productDetails;
   }
 
+  ProductDetails? getProductByName(Game game) {
+    if (game.name == '花火ゲーム') {
+      return _products.firstWhere((product) => product.id == Env.fireworksGame);
+    } else if (game.name == '音楽ゲーム') {
+      return _products.firstWhere((product) => product.id == Env.musicGame);
+    }
+    return null;
+  }
+
   Future<void> _getPastPurchases() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
       await _getAndroidPastPurchases();
@@ -62,7 +74,11 @@ class InAppPurchaseService {
         await androidAddition.queryPastPurchases();
 
     for (var purchase in response.pastPurchases) {
-      _verifyPurchase(purchase);
+      if (purchase.status == PurchaseStatus.purchased ||
+          purchase.status == PurchaseStatus.restored) {
+        _purchasedProductIds.add(purchase.productID);
+        _verifyPurchase(purchase);
+      }
     }
   }
 
@@ -94,6 +110,7 @@ class InAppPurchaseService {
           purchaseDetails.status == PurchaseStatus.restored) {
         _verifyPurchase(purchaseDetails);
         _purchaseResultController.add(true);
+        _purchasedProductIds.add(purchaseDetails.productID); // 追加：購入済みリストに追加
       }
 
       if (purchaseDetails.pendingCompletePurchase) {
@@ -115,6 +132,11 @@ class InAppPurchaseService {
     // エラー処理
     print('購入ストリームエラー: $error');
     _purchaseResultController.add(false);
+  }
+
+  // 追加：特定の製品が購入済みかどうかを確認するメソッド
+  bool isProductPurchased(String productId) {
+    return _purchasedProductIds.contains(productId);
   }
 
   void dispose() {

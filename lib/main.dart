@@ -3,7 +3,7 @@ import 'package:bebikame/config/theme.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/view/game_selection_view.dart';
 import 'package:bebikame/view/widget/loading_indicator.dart';
-import 'package:bebikame/viewmodel/provider/initialize_app_provider.dart';
+import 'package:bebikame/provider/initialize_app_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';

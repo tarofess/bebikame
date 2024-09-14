@@ -6,7 +6,7 @@ import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/view/game_selection_view.dart';
 import 'package:bebikame/view/game_view.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
-import 'package:bebikame/viewmodel/provider/video_player_provider.dart';
+import 'package:bebikame/provider/video_player_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
