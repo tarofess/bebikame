@@ -88,8 +88,10 @@ class GameSelectionView extends ConsumerWidget {
       if (!result) return;
 
       if (context.mounted) {
-        await LoadingOverlay.of(context)
-            .during(() => _handleInAppPurchase(game, ref));
+        final isSuccessPurchase = await LoadingOverlay.of(context).during(
+          () => _handleInAppPurchase(game, ref),
+        );
+        if (!isSuccessPurchase) return;
       }
     }
 

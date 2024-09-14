@@ -1,7 +1,12 @@
+import 'package:bebikame/config/env/env.dart';
+import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/model/game.dart';
+import 'package:bebikame/service/in_app_purchase_service.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameNotifier extends Notifier<List<Game>> {
+  final _inAppPurchaseService = getIt<InAppPurchaseService>();
+
   @override
   List<Game> build() {
     return [
@@ -25,15 +30,19 @@ class GameNotifier extends Notifier<List<Game>> {
         image: 'assets/images/night/bg_night.jpg',
         isLocked: false,
       ),
-      const Game(
+      Game(
         name: '花火ゲーム',
         image: 'assets/images/fireworks/bg_fireworks.jpg',
-        isLocked: true,
+        isLocked: _inAppPurchaseService.isProductPurchased(Env.fireworksGame)
+            ? false
+            : true,
       ),
-      const Game(
+      Game(
         name: '音楽ゲーム',
         image: 'assets/images/music/bg_music.jpg',
-        isLocked: true,
+        isLocked: _inAppPurchaseService.isProductPurchased(Env.musicGame)
+            ? false
+            : true,
       ),
     ];
   }
