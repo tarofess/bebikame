@@ -10,22 +10,22 @@ class InAppPurchaseService {
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<ProductDetails> _products = [];
   final List<String> _productIds = [Env.fireworksGame, Env.musicGame];
-  final List<String> _purchasedProductIds = []; // 追加：購入済み製品IDのリスト
-
-  bool _isAvailable = false;
-  bool get isAvailable => _isAvailable;
-
+  final List<String> _purchasedProductIds = [];
   List<ProductDetails> get products => _products;
-  List<String> get purchasedProductIds => _purchasedProductIds; // 追加：ゲッター
+  List<String> get purchasedProductIds => _purchasedProductIds;
 
   final StreamController<bool> _purchaseResultController =
       StreamController<bool>.broadcast();
   Stream<bool> get purchaseResultStream => _purchaseResultController.stream;
 
   Future<void> initialize() async {
-    _isAvailable = await _inAppPurchase.isAvailable();
-    if (!_isAvailable) {
-      return;
+    try {
+      final isAvailable = await _inAppPurchase.isAvailable();
+      if (!isAvailable) {
+        return;
+      }
+    } catch (e) {
+      throw Exception('ストアとの通信中に予期せぬエラーが発生しました。');
     }
 
     _subscription = _inAppPurchase.purchaseStream.listen(
@@ -39,14 +39,13 @@ class InAppPurchaseService {
   }
 
   Future<void> _getProducts() async {
-    final ProductDetailsResponse response =
-        await _inAppPurchase.queryProductDetails(_productIds.toSet());
-
-    if (response.notFoundIDs.isNotEmpty) {
-      print("Product IDs not found: ${response.notFoundIDs}");
+    try {
+      final ProductDetailsResponse response =
+          await _inAppPurchase.queryProductDetails(_productIds.toSet());
+      _products = response.productDetails;
+    } catch (e) {
+      throw Exception('アプリ内課金の製品データの取得に失敗しました。');
     }
-
-    _products = response.productDetails;
   }
 
   ProductDetails? getProductByName(Game game) {
@@ -59,10 +58,14 @@ class InAppPurchaseService {
   }
 
   Future<void> _getPastPurchases() async {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      await _getAndroidPastPurchases();
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      await _getIOSPastPurchases();
+    try {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        await _getAndroidPastPurchases();
+      } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+        await _getIOSPastPurchases();
+      }
+    } catch (e) {
+      throw Exception('アプリ内課金の購入履歴の取得に失敗しました。');
     }
   }
 
@@ -77,7 +80,6 @@ class InAppPurchaseService {
       if (purchase.status == PurchaseStatus.purchased ||
           purchase.status == PurchaseStatus.restored) {
         _purchasedProductIds.add(purchase.productID);
-        _verifyPurchase(purchase);
       }
     }
   }
@@ -93,35 +95,28 @@ class InAppPurchaseService {
           .buyNonConsumable(purchaseParam: purchaseParam);
       return success;
     } catch (e) {
-      print('購入エラー: $e');
-      return false;
+      throw Exception('購入処理中にエラーが発生しました。');
     }
+  }
+
+  bool isProductPurchased(String productId) {
+    return _purchasedProductIds.contains(productId);
   }
 
   void _onPurchaseUpdate(List<PurchaseDetails> purchaseDetailsList) {
     for (var purchaseDetails in purchaseDetailsList) {
-      if (purchaseDetails.status == PurchaseStatus.pending) {
-        // 保留中の購入処理
+      if (purchaseDetails.status == PurchaseStatus.purchased ||
+          purchaseDetails.status == PurchaseStatus.restored) {
+        _purchaseResultController.add(true);
+        _purchasedProductIds.add(purchaseDetails.productID);
       } else if (purchaseDetails.status == PurchaseStatus.canceled) {
         _purchaseResultController.add(false);
       } else if (purchaseDetails.status == PurchaseStatus.error) {
         _purchaseResultController.add(false);
-      } else if (purchaseDetails.status == PurchaseStatus.purchased ||
-          purchaseDetails.status == PurchaseStatus.restored) {
-        _verifyPurchase(purchaseDetails);
-        _purchaseResultController.add(true);
-        _purchasedProductIds.add(purchaseDetails.productID); // 追加：購入済みリストに追加
-      }
-
-      if (purchaseDetails.pendingCompletePurchase) {
+      } else if (purchaseDetails.pendingCompletePurchase) {
         _inAppPurchase.completePurchase(purchaseDetails);
       }
     }
-  }
-
-  Future<void> _verifyPurchase(PurchaseDetails purchaseDetails) async {
-    // サーバーサイドの検証処理をここに実装
-    print('Purchase verified: ${purchaseDetails.productID}');
   }
 
   void _updateStreamOnDone() {
@@ -129,14 +124,11 @@ class InAppPurchaseService {
   }
 
   void _updateStreamOnError(dynamic error) {
-    // エラー処理
-    print('購入ストリームエラー: $error');
-    _purchaseResultController.add(false);
-  }
-
-  // 追加：特定の製品が購入済みかどうかを確認するメソッド
-  bool isProductPurchased(String productId) {
-    return _purchasedProductIds.contains(productId);
+    try {
+      _purchaseResultController.add(false);
+    } catch (e) {
+      throw Exception('アプリ内課金の購入結果の取得に失敗しました。');
+    }
   }
 
   void dispose() {
