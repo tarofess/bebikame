@@ -25,7 +25,7 @@ class AudioService {
     try {
       final player = _audioPlayers[fileName]!;
       player.setReleaseMode(loop ? ReleaseMode.loop : ReleaseMode.release);
-      player.setPlayerMode(PlayerMode.lowLatency);
+      player.setPlayerMode(PlayerMode.mediaPlayer);
       player.setVolume(volume);
       await player.resume();
     } catch (e) {
