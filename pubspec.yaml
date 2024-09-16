@@ -41,7 +41,7 @@ dependencies:
   flutter_native_splash:
   flutter_screenutil:
   audioplayers:
-  image_gallery_saver:
+  photo_manager:
   ffmpeg_kit_flutter:
   in_app_purchase:
   in_app_purchase_android:
