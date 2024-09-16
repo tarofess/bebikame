@@ -10,6 +10,7 @@ class AudioService {
       try {
         final player = AudioPlayer();
         await player.setSource(AssetSource('sounds/$fileName.mp3'));
+        await player.setPlayerMode(PlayerMode.mediaPlayer);
         _audioPlayers[fileName] = player;
       } catch (e) {
         throw Exception('音声の読み込み中にエラーが発生しました。\n音声を再生できません。');
@@ -23,11 +24,10 @@ class AudioService {
       await _loadAudio(fileName);
     }
     try {
-      final player = _audioPlayers[fileName]!;
-      player.setReleaseMode(loop ? ReleaseMode.loop : ReleaseMode.release);
-      player.setPlayerMode(PlayerMode.mediaPlayer);
-      player.setVolume(volume);
-      await player.resume();
+      _audioPlayers[fileName]!
+          .setReleaseMode(loop ? ReleaseMode.loop : ReleaseMode.release);
+      _audioPlayers[fileName]!.setVolume(volume);
+      await _audioPlayers[fileName]!.play(AssetSource('sounds/$fileName.mp3'));
     } catch (e) {
       throw Exception('音声の再生中にエラーが発生しました。\n音声を再生できません。');
     }
