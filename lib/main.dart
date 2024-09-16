@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/config/theme.dart';
 import 'package:bebikame/view/game_selection_view.dart';
@@ -14,8 +16,9 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
+    Platform.isAndroid
+        ? DeviceOrientation.landscapeLeft
+        : DeviceOrientation.landscapeRight,
   ]);
 
   setupGetIt();
