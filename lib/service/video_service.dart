@@ -62,7 +62,7 @@ class VideoService {
     }
   }
 
-  void dispose() {
-    controller?.dispose();
+  Future<void> dispose() async {
+    await controller?.dispose();
   }
 }
