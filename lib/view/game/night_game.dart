@@ -123,7 +123,7 @@ class NightGame extends HookWidget {
       Function(ValueNotifier<double>) animateScale,
       Function(String) playSound) {
     final rotationController = useAnimationController(
-      duration: const Duration(milliseconds: 2200),
+      duration: const Duration(milliseconds: 2500),
     );
     final isAnimating = useState(false);
 
