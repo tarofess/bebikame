@@ -88,6 +88,10 @@ class InAppPurchaseService {
     await _inAppPurchase.restorePurchases();
   }
 
+  bool isProductPurchased(String productId) {
+    return _purchasedProductIds.contains(productId);
+  }
+
   Future<bool> buyProduct(ProductDetails product) async {
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
     try {
@@ -97,10 +101,6 @@ class InAppPurchaseService {
     } catch (e) {
       throw Exception('購入処理中にエラーが発生しました。');
     }
-  }
-
-  bool isProductPurchased(String productId) {
-    return _purchasedProductIds.contains(productId);
   }
 
   void _onPurchaseUpdate(List<PurchaseDetails> purchaseDetailsList) {

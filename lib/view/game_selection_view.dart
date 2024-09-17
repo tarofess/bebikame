@@ -92,7 +92,9 @@ class GameSelectionView extends ConsumerWidget {
         final isSuccessPurchase = await LoadingOverlay.of(context).during(
           () => _handleInAppPurchase(game, ref),
         );
-        if (!isSuccessPurchase) return;
+        if (!isSuccessPurchase) {
+          throw Exception('購入処理中にエラーが発生しました。\n再度お試しください。');
+        }
       }
     }
 
