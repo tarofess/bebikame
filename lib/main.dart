@@ -53,6 +53,7 @@ class MyApp extends ConsumerWidget {
                 retry: () => ref.refresh(initializeAppProvider),
               );
             },
+            skipLoadingOnRefresh: false,
           );
         },
       ),

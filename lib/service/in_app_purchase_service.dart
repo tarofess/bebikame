@@ -44,7 +44,7 @@ class InAppPurchaseService {
           await _inAppPurchase.queryProductDetails(_productIds.toSet());
       _products = response.productDetails;
     } catch (e) {
-      throw Exception('アプリ内課金の製品データの取得に失敗しました。');
+      throw Exception('アプリ内課金製品のデータ取得に失敗しました。');
     }
   }
 
@@ -65,7 +65,7 @@ class InAppPurchaseService {
         await _getIOSPastPurchases();
       }
     } catch (e) {
-      throw Exception('アプリ内課金の購入履歴の取得に失敗しました。');
+      throw Exception('アプリ内課金購入履歴の取得に失敗しました。\nネットワーク接続を確認してください。');
     }
   }
 
