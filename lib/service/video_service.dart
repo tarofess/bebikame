@@ -54,7 +54,9 @@ class VideoService {
   Future<void> saveVideo(String videoPath) async {
     try {
       final file = File(videoPath);
-      await PhotoManager.editor.saveVideo(file);
+      final title =
+          'bebikame_video_${DateTime.now().millisecondsSinceEpoch}.mp4';
+      await PhotoManager.editor.saveVideo(file, title: title);
     } catch (e) {
       throw Exception('動画の保存に失敗しました。\n端末の容量などを確認して再度お試しください。');
     }
