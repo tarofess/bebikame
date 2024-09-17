@@ -5,6 +5,7 @@ import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/view/game_selection_view.dart';
 import 'package:bebikame/view/game_view.dart';
+import 'package:bebikame/view/widget/loading_indicator.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/provider/video_player_provider.dart';
 import 'package:flutter/material.dart';
@@ -39,9 +40,7 @@ class VideoPreviewView extends HookConsumerWidget {
           videoPlayerController.value = controller;
           return VideoPlayer(controller);
         },
-        loading: () => CircularProgressIndicator(
-          color: Theme.of(context).colorScheme.inversePrimary,
-        ),
+        loading: () => const LoadingIndicator(),
         error: (e, _) => Center(
           child: Text(
             e.toString(),
