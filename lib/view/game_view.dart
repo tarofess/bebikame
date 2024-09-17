@@ -32,14 +32,7 @@ class GameView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final startRecording = ref.watch(startRecordingProvider);
     final gameName = ref.read(gameProvider.notifier).getSelectedGameName();
-
-    useEffect(() {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-      return () {
-        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-        _videoService.dispose();
-      };
-    }, []);
+    final appLifecycleState = useAppLifecycleState();
 
     Future<void> stopRecording() async {
       try {
@@ -58,6 +51,21 @@ class GameView extends HookConsumerWidget {
         }
       }
     }
+
+    useEffect(() {
+      if (appLifecycleState == AppLifecycleState.paused) {
+        stopRecording();
+      }
+      return;
+    }, [appLifecycleState]);
+
+    useEffect(() {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+      return () {
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+        _videoService.dispose();
+      };
+    }, []);
 
     return Scaffold(
       body: Stack(
