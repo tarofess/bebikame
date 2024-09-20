@@ -93,24 +93,12 @@ class GameSelectionView extends ConsumerWidget {
           () => _handleInAppPurchase(game, ref),
         );
         if (!isSuccessPurchase) {
-          throw Exception('購入処理中にエラーが発生しました。\n再度お試しください。');
+          throw Exception('購入処理が完了できませんでした。\n再度お試しください。');
         }
       }
     }
 
     if (context.mounted) await goToGamePreviewView(context, ref, game);
-  }
-
-  Future<void> _handleSettingButtonPress(BuildContext context) async {
-    final sharedPrefService = getIt<SharedPreferencesService>();
-    final savedShootingTime = await sharedPrefService.getShootingTime();
-    if (context.mounted) {
-      final result =
-          await _dialogService.showSettingsDialog(context, savedShootingTime);
-      if (result != null) {
-        await sharedPrefService.saveShootingTime(result);
-      }
-    }
   }
 
   Future<bool> _handleInAppPurchase(Game game, WidgetRef ref) async {
@@ -133,7 +121,19 @@ class GameSelectionView extends ConsumerWidget {
 
       return purchaseResult;
     } catch (e) {
-      throw Exception('ゲームの購入中に予期せぬエラーが発生しました。\n再度お試しください。');
+      throw Exception('購入処理中に予期せぬエラーが発生しました。\n再度お試しください。');
+    }
+  }
+
+  Future<void> _handleSettingButtonPress(BuildContext context) async {
+    final sharedPrefService = getIt<SharedPreferencesService>();
+    final savedShootingTime = await sharedPrefService.getShootingTime();
+    if (context.mounted) {
+      final result =
+          await _dialogService.showSettingsDialog(context, savedShootingTime);
+      if (result != null) {
+        await sharedPrefService.saveShootingTime(result);
+      }
     }
   }
 

@@ -111,8 +111,10 @@ class InAppPurchaseService {
         _purchasedProductIds.add(purchaseDetails.productID);
       } else if (purchaseDetails.status == PurchaseStatus.canceled) {
         _purchaseResultController.add(false);
+        _inAppPurchase.completePurchase(purchaseDetails);
       } else if (purchaseDetails.status == PurchaseStatus.error) {
         _purchaseResultController.add(false);
+        _inAppPurchase.completePurchase(purchaseDetails);
       } else if (purchaseDetails.pendingCompletePurchase) {
         _inAppPurchase.completePurchase(purchaseDetails);
       }
