@@ -19,13 +19,9 @@ class InAppPurchaseService {
   Stream<bool> get purchaseResultStream => _purchaseResultController.stream;
 
   Future<void> initialize() async {
-    try {
-      final isAvailable = await _inAppPurchase.isAvailable();
-      if (!isAvailable) {
-        return;
-      }
-    } catch (e) {
-      throw Exception('ストアとの通信中に予期せぬエラーが発生しました。');
+    final isAvailable = await _inAppPurchase.isAvailable();
+    if (!isAvailable) {
+      return;
     }
 
     _subscription = _inAppPurchase.purchaseStream.listen(
@@ -65,7 +61,7 @@ class InAppPurchaseService {
         await _getIOSPastPurchases();
       }
     } catch (e) {
-      throw Exception('アプリ内課金購入履歴の取得に失敗しました。\nネットワーク接続を確認してください。');
+      rethrow;
     }
   }
 
@@ -76,6 +72,10 @@ class InAppPurchaseService {
     final QueryPurchaseDetailsResponse response =
         await androidAddition.queryPastPurchases();
 
+    if (response.error != null) {
+      throw Exception('アプリ内課金購入履歴の取得に失敗しました。\nネットワーク接続を確認してください。');
+    }
+
     for (var purchase in response.pastPurchases) {
       if (purchase.status == PurchaseStatus.purchased ||
           purchase.status == PurchaseStatus.restored) {
@@ -85,7 +85,11 @@ class InAppPurchaseService {
   }
 
   Future<void> _getIOSPastPurchases() async {
-    await _inAppPurchase.restorePurchases();
+    try {
+      await _inAppPurchase.restorePurchases();
+    } catch (e) {
+      throw Exception('アプリ内課金購入履歴の取得に失敗しました。\nネットワーク接続を確認してください。');
+    }
   }
 
   bool isProductPurchased(String productId) {
