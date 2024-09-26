@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/timer_service.dart';
@@ -23,8 +25,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class GameView extends HookConsumerWidget {
   final _navigationService = getIt<NavigationService>();
   final _videoService = getIt<VideoService>();
-  final _dialogService = getIt<DialogService>();
-  final _audioService = getIt<AudioService>();
+  final _timerService = getIt<TimerService>();
 
   GameView({super.key});
 
@@ -34,36 +35,35 @@ class GameView extends HookConsumerWidget {
     final gameName = ref.read(gameProvider.notifier).getSelectedGameName();
     final appLifecycleState = useAppLifecycleState();
 
-    Future<void> stopRecording() async {
-      try {
-        await LoadingOverlay.of(context).during(() async {
-          final videoPath = await _videoService.stopRecording();
-          if (context.mounted) {
-            _navigationService.pushAndRemoveUntil(
-                context, VideoPreviewView(videoPath: videoPath));
-          }
-        });
-      } catch (e) {
-        try {
-          if (context.mounted) await _goBackWithBGMFadeIn(context, e);
-        } catch (e) {
-          if (context.mounted) _goBack(context, e);
-        }
-      }
-    }
-
     useEffect(() {
-      if (appLifecycleState == AppLifecycleState.paused) {
-        stopRecording();
-      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (appLifecycleState == AppLifecycleState.paused) {
+          if (context.mounted) stopRecording(context);
+          _timerService.stopTimer();
+        }
+      });
       return;
     }, [appLifecycleState]);
 
     useEffect(() {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+      Future<void> hideNavigationBar() async {
+        if (Platform.isAndroid) {
+          await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+        }
+      }
+
+      Future<void> showNavigationBar() async {
+        if (Platform.isAndroid) {
+          await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+        }
+      }
+
+      hideNavigationBar();
+
       return () {
-        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+        showNavigationBar();
         _videoService.dispose();
+        _timerService.stopTimer();
       };
     }, []);
 
@@ -81,9 +81,10 @@ class GameView extends HookConsumerWidget {
           },
           startRecording.when(
             data: (shootingTime) {
-              final timerService = getIt<TimerService>();
-              timerService.startCountdown(shootingTime, stopRecording);
-              return _buildCountdownText(timerService.remainingTime);
+              _timerService.startCountdown(shootingTime, () {
+                if (context.mounted) stopRecording(context);
+              });
+              return _buildCountdownText(_timerService.remainingTime);
             },
             loading: () => const LoadingIndicator(),
             error: (e, _) {
@@ -137,12 +138,32 @@ class GameView extends HookConsumerWidget {
   }
 
   Future<void> _goBackWithBGMFadeIn(BuildContext context, Object e) async {
-    await _audioService.fadeInStart('bgm');
+    final audioService = getIt<AudioService>();
+    await audioService.fadeInStart('bgm');
     if (context.mounted) _goBack(context, e);
   }
 
   void _goBack(BuildContext context, Object e) {
+    final dialogService = getIt<DialogService>();
     _navigationService.pop(context);
-    _dialogService.showErrorDialog(context, '$e\nゲーム選択画面に戻ります。');
+    dialogService.showErrorDialog(context, '$e\nゲーム選択画面に戻ります。');
+  }
+
+  Future<void> stopRecording(BuildContext context) async {
+    try {
+      await LoadingOverlay.of(context).during(() async {
+        final videoPath = await _videoService.stopRecording();
+        if (context.mounted) {
+          _navigationService.pushAndRemoveUntil(
+              context, VideoPreviewView(videoPath: videoPath));
+        }
+      });
+    } catch (e) {
+      try {
+        if (context.mounted) await _goBackWithBGMFadeIn(context, e);
+      } catch (e) {
+        if (context.mounted) _goBack(context, e);
+      }
+    }
   }
 }
