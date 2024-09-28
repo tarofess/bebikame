@@ -74,13 +74,13 @@ class GamePreviewView extends ConsumerWidget {
         await permissionHandlerService.requestPermissions();
 
     if (isAllPermissionsGranted) {
-      if (context.mounted) await handlePermissionGranted(context);
+      if (context.mounted) await _handlePermissionGranted(context);
     } else {
-      if (context.mounted) await handlePermissionDenied(context);
+      if (context.mounted) await _handlePermissionDenied(context);
     }
   }
 
-  Future<void> handlePermissionGranted(BuildContext context) async {
+  Future<void> _handlePermissionGranted(BuildContext context) async {
     final videoService = getIt<VideoService>();
     final audioService = getIt<AudioService>();
     final navigationService = getIt<NavigationService>();
@@ -96,7 +96,7 @@ class GamePreviewView extends ConsumerWidget {
     }
   }
 
-  Future<void> handlePermissionDenied(BuildContext context) async {
+  Future<void> _handlePermissionDenied(BuildContext context) async {
     await _dialogService.showErrorDialog(
       context,
       'カメラ、マイク、フォトライブラリへのアクセスが全て許可されていません。\n'

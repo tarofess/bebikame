@@ -98,7 +98,7 @@ class GameSelectionView extends ConsumerWidget {
       }
     }
 
-    if (context.mounted) await goToGamePreviewView(context, ref, game);
+    if (context.mounted) await _goToGamePreviewView(context, ref, game);
   }
 
   Future<bool> _handleInAppPurchase(Game game, WidgetRef ref) async {
@@ -137,7 +137,7 @@ class GameSelectionView extends ConsumerWidget {
     }
   }
 
-  Future<void> goToGamePreviewView(
+  Future<void> _goToGamePreviewView(
       BuildContext context, WidgetRef ref, Game game) async {
     final navigationService = getIt<NavigationService>();
     final audioService = getIt<AudioService>();

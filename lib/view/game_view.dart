@@ -38,7 +38,7 @@ class GameView extends HookConsumerWidget {
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (appLifecycleState == AppLifecycleState.paused) {
-          if (context.mounted) stopRecording(context);
+          if (context.mounted) _stopRecording(context);
           _timerService.stopTimer();
         }
       });
@@ -82,7 +82,7 @@ class GameView extends HookConsumerWidget {
           startRecording.when(
             data: (shootingTime) {
               _timerService.startCountdown(shootingTime, () {
-                if (context.mounted) stopRecording(context);
+                if (context.mounted) _stopRecording(context);
               });
               return _buildCountdownText(_timerService.remainingTime);
             },
@@ -149,7 +149,7 @@ class GameView extends HookConsumerWidget {
     dialogService.showErrorDialog(context, '$e\nゲーム選択画面に戻ります。');
   }
 
-  Future<void> stopRecording(BuildContext context) async {
+  Future<void> _stopRecording(BuildContext context) async {
     try {
       await LoadingOverlay.of(context).during(() async {
         final videoPath = await _videoService.stopRecording();
