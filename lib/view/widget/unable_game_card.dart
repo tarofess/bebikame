@@ -20,7 +20,7 @@ class UnableGameCard extends ConsumerWidget {
         onTap: () => _dialogService.showMessageDialog(
           context,
           'アプリ内課金アイテム取得エラー',
-          'ネットワークに接続されていないのでアプリ内課金の情報が取得できません。\n'
+          'ネットワークに接続されていないためアプリ内課金の情報が取得できません。\n'
               'アプリ内課金アイテムを取得するためにネットワークに接続してからアプリを再起動してください。',
         ),
         child: Stack(
