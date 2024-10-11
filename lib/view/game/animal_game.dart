@@ -105,8 +105,8 @@ class AnimalGame extends HookWidget {
         duration: const Duration(milliseconds: 200),
         child: Image.asset(
           'assets/images/animal/$fileName.png',
-          width: 120.r,
-          height: 120.r,
+          width: 110.r,
+          height: 110.r,
         ),
       ),
     );

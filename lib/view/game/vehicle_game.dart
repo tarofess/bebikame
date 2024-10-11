@@ -134,8 +134,8 @@ class VehicleGame extends HookWidget {
             : () => animatePosition(position, target),
         child: Image.asset(
           'assets/images/vehicle/$fileName.png',
-          width: 150.r,
-          height: 150.r,
+          width: 130.r,
+          height: 130.r,
         ),
       ),
     );
