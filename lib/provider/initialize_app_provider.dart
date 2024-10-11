@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/firebase_options.dart';
+import 'package:bebikame/provider/is_enable_in_app_purchase_provider.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -14,7 +15,8 @@ final _inAppPurchaseService = getIt<InAppPurchaseService>();
 
 final initializeAppProvider = FutureProvider.autoDispose((ref) async {
   await setupFirebase();
-  await _inAppPurchaseService.initialize();
+  ref.read(isEnableInAppPurchaseProvider.notifier).state =
+      await _inAppPurchaseService.initialize();
   await _audioService.play('bgm', loop: true, volume: 0.3);
 });
 

@@ -1,5 +1,6 @@
 import 'package:bebikame/config/get_it.dart';
 import 'package:bebikame/model/game.dart';
+import 'package:bebikame/provider/is_enable_in_app_purchase_provider.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
@@ -9,6 +10,7 @@ import 'package:bebikame/view/game_preview_view.dart';
 import 'package:bebikame/view/widget/game_card.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/provider/game_provider.dart';
+import 'package:bebikame/view/widget/unable_game_card.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -21,6 +23,7 @@ class GameSelectionView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final game = ref.watch(gameProvider);
+    final isEnableInAppPurchase = ref.watch(isEnableInAppPurchaseProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,19 +58,25 @@ class GameSelectionView extends ConsumerWidget {
               ),
               itemCount: game.length,
               itemBuilder: (context, index) {
-                return GameCard(
-                  imagePath: game[index].image,
-                  isLocked: game[index].isLocked,
-                  onTap: () async {
-                    try {
-                      await _handleGridTilePress(context, ref, game[index]);
-                    } catch (e) {
-                      if (context.mounted) {
-                        _dialogService.showErrorDialog(context, e.toString());
-                      }
-                    }
-                  },
-                );
+                return !isEnableInAppPurchase && (index == 4 || index == 5)
+                    ? UnableGameCard(imagePath: game[index].image)
+                    : GameCard(
+                        imagePath: game[index].image,
+                        isLocked: game[index].isLocked,
+                        onTap: () async {
+                          try {
+                            await _handleGridTilePress(
+                                context, ref, game[index]);
+                          } catch (e) {
+                            if (context.mounted) {
+                              _dialogService.showErrorDialog(
+                                context,
+                                e.toString(),
+                              );
+                            }
+                          }
+                        },
+                      );
               },
             ),
           ),

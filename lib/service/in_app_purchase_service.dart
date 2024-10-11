@@ -18,10 +18,10 @@ class InAppPurchaseService {
       StreamController<bool>.broadcast();
   Stream<bool> get purchaseResultStream => _purchaseResultController.stream;
 
-  Future<void> initialize() async {
-    final isAvailable = await _inAppPurchase.isAvailable();
+  Future<bool> initialize() async {
+    bool isAvailable = await _inAppPurchase.isAvailable();
     if (!isAvailable) {
-      return;
+      return false;
     }
 
     _subscription = _inAppPurchase.purchaseStream.listen(
@@ -30,17 +30,20 @@ class InAppPurchaseService {
       onError: _updateStreamOnError,
     );
 
-    await _getProducts();
-    await _getPastPurchases();
+    isAvailable = await _getProducts();
+    isAvailable = await _getPastPurchases();
+
+    return isAvailable;
   }
 
-  Future<void> _getProducts() async {
+  Future<bool> _getProducts() async {
     try {
       final ProductDetailsResponse response =
           await _inAppPurchase.queryProductDetails(_productIds.toSet());
       _products = response.productDetails;
+      return true;
     } catch (e) {
-      throw Exception('アプリ内課金製品のデータ取得に失敗しました。');
+      return false;
     }
   }
 
@@ -53,15 +56,16 @@ class InAppPurchaseService {
     return null;
   }
 
-  Future<void> _getPastPurchases() async {
+  Future<bool> _getPastPurchases() async {
     try {
       if (defaultTargetPlatform == TargetPlatform.android) {
         await _getAndroidPastPurchases();
       } else if (defaultTargetPlatform == TargetPlatform.iOS) {
         await _getIOSPastPurchases();
       }
+      return true;
     } catch (e) {
-      rethrow;
+      return false;
     }
   }
 
