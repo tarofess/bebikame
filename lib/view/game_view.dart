@@ -17,6 +17,7 @@ import 'package:bebikame/view/widget/loading_indicator.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/provider/game_provider.dart';
 import 'package:bebikame/provider/start_recording_provider.dart';
+import 'package:bebikame/view/widget/recording_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -84,7 +85,18 @@ class GameView extends HookConsumerWidget {
               _timerService.startCountdown(shootingTime, () {
                 if (context.mounted) _stopRecording(context);
               });
-              return _buildCountdownText(_timerService.remainingTime);
+              return Column(
+                children: [
+                  const RecordingProgressBar(),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        _buildCountdownText(_timerService.remainingTime),
+                      ],
+                    ),
+                  ),
+                ],
+              );
             },
             loading: () => const LoadingIndicator(),
             error: (e, _) {
