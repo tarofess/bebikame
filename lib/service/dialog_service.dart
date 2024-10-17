@@ -1,3 +1,6 @@
+import 'package:bebikame/config/get_it.dart';
+import 'package:bebikame/service/in_app_purchase_service.dart';
+import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:flutter/material.dart';
 
 class DialogService {
@@ -44,7 +47,10 @@ class DialogService {
   }
 
   Future<int?> showSettingsDialog(
-      BuildContext context, int? savedShootingTime) async {
+    BuildContext context,
+    int? savedShootingTime,
+    VoidCallback onSuccessRestore,
+  ) async {
     double currentValue = savedShootingTime?.toDouble() ?? 15;
 
     final result = await showDialog(
@@ -113,6 +119,12 @@ class DialogService {
                       ),
                     ),
                   ],
+                ),
+                Center(
+                  child: _buildInAppPurchaseRestoreButton(
+                    context,
+                    onSuccessRestore,
+                  ),
                 ),
               ],
             );
@@ -220,6 +232,56 @@ class DialogService {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildInAppPurchaseRestoreButton(
+      BuildContext context, VoidCallback updateGridItems) {
+    final dialogService = getIt<DialogService>();
+    final inAppPurchaseService = getIt<InAppPurchaseService>();
+
+    return TextButton(
+      onPressed: () async {
+        try {
+          final result = await dialogService.showConfirmationDialog(
+            context,
+            '購入済み商品の復元',
+            '購入済み商品を復元しますか？',
+            'はい',
+            'いいえ',
+          );
+          if (!result) return;
+
+          final beforeRestorePurchasedProductIdsCount =
+              inAppPurchaseService.purchasedProductIds.length;
+
+          if (context.mounted) {
+            final isSuccessRestore = await LoadingOverlay.of(context).during(
+              () => inAppPurchaseService.getPastPurchases(),
+            );
+            if (!isSuccessRestore) {
+              throw Exception('購入済み商品の復元に失敗しました。\n再度お試しください。');
+            }
+
+            if (context.mounted) {
+              if (inAppPurchaseService.purchasedProductIds.length >
+                  beforeRestorePurchasedProductIdsCount) {
+                dialogService.showMessageDialog(
+                    context, '復元成功', '購入済み商品を復元しました。');
+                updateGridItems();
+              } else {
+                dialogService.showMessageDialog(
+                    context, '復元処理完了', '復元可能な購入済み商品はありませんでした。');
+              }
+            }
+          }
+        } catch (e) {
+          if (context.mounted) {
+            dialogService.showErrorDialog(context, e.toString());
+          }
+        }
+      },
+      child: const Text('購入済み商品の復元', style: TextStyle(fontSize: 14)),
     );
   }
 }

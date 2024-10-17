@@ -18,6 +18,9 @@ class InAppPurchaseService {
       StreamController<bool>.broadcast();
   Stream<bool> get purchaseResultStream => _purchaseResultController.stream;
 
+  late Completer<void> _purchaseUpdateCompleter;
+  bool _isRestoringPurchases = false;
+
   Future<bool> initialize() async {
     bool isAvailable = await _inAppPurchase.isAvailable();
     if (!isAvailable) {
@@ -31,7 +34,7 @@ class InAppPurchaseService {
     );
 
     isAvailable = await _getProducts();
-    isAvailable = await _getPastPurchases();
+    isAvailable = await getPastPurchases();
 
     return isAvailable;
   }
@@ -56,13 +59,27 @@ class InAppPurchaseService {
     return null;
   }
 
-  Future<bool> _getPastPurchases() async {
+  Future<bool> getPastPurchases() async {
     try {
+      _isRestoringPurchases = true;
+      _purchaseUpdateCompleter = Completer<void>();
+
       if (defaultTargetPlatform == TargetPlatform.android) {
         await _getAndroidPastPurchases();
       } else if (defaultTargetPlatform == TargetPlatform.iOS) {
         await _getIOSPastPurchases();
       }
+
+      await _purchaseUpdateCompleter.future.timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          if (!_purchaseUpdateCompleter.isCompleted) {
+            _purchaseUpdateCompleter.complete();
+          }
+        },
+      );
+
+      _isRestoringPurchases = false;
       return true;
     } catch (e) {
       return false;
@@ -117,6 +134,10 @@ class InAppPurchaseService {
           purchaseDetails.status == PurchaseStatus.restored) {
         _purchaseResultController.add(true);
         _purchasedProductIds.add(purchaseDetails.productID);
+
+        if (_isRestoringPurchases && !_purchaseUpdateCompleter.isCompleted) {
+          _purchaseUpdateCompleter.complete();
+        }
       } else if (purchaseDetails.status == PurchaseStatus.canceled) {
         _purchaseResultController.add(false);
         _inAppPurchase.completePurchase(purchaseDetails);

@@ -77,6 +77,25 @@ class GameNotifier extends Notifier<List<Game>> {
       return game;
     }).toList();
   }
+
+  void updateGameLockStatus() {
+    state = state.map((game) {
+      if (game.name == '花火ゲーム') {
+        return game.copyWith(
+          isLocked: _inAppPurchaseService.isProductPurchased(Env.fireworksGame)
+              ? false
+              : true,
+        );
+      } else if (game.name == '音楽ゲーム') {
+        return game.copyWith(
+          isLocked: _inAppPurchaseService.isProductPurchased(Env.musicGame)
+              ? false
+              : true,
+        );
+      }
+      return game;
+    }).toList();
+  }
 }
 
 final gameProvider = NotifierProvider<GameNotifier, List<Game>>(

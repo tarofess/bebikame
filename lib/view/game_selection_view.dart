@@ -35,7 +35,7 @@ class GameSelectionView extends ConsumerWidget {
             icon: const Icon(Icons.settings),
             onPressed: () async {
               try {
-                await _handleSettingButtonPress(context);
+                await _handleSettingButtonPress(context, ref);
               } catch (e) {
                 if (context.mounted) {
                   _dialogService.showErrorDialog(context, e.toString());
@@ -134,12 +134,19 @@ class GameSelectionView extends ConsumerWidget {
     }
   }
 
-  Future<void> _handleSettingButtonPress(BuildContext context) async {
+  Future<void> _handleSettingButtonPress(
+      BuildContext context, WidgetRef ref) async {
     final sharedPrefService = getIt<SharedPreferencesService>();
     final savedShootingTime = await sharedPrefService.getShootingTime();
     if (context.mounted) {
-      final result =
-          await _dialogService.showSettingsDialog(context, savedShootingTime);
+      final result = await _dialogService.showSettingsDialog(
+        context,
+        savedShootingTime,
+        () {
+          ref.read(isEnableInAppPurchaseProvider.notifier).state = true;
+          ref.read(gameProvider.notifier).updateGameLockStatus();
+        },
+      );
       if (result != null) {
         await sharedPrefService.saveShootingTime(result);
       }
