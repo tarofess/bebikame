@@ -13,12 +13,13 @@ import 'package:bebikame/application/provider/video_player_provider.dart';
 import 'package:bebikame/view/dialog/confirmation_dialog.dart';
 import 'package:bebikame/view/dialog/error_dialog.dart';
 import 'package:bebikame/view/dialog/message_dialog.dart';
+import 'package:bebikame/model/result.dart';
+import 'package:bebikame/view/provider/save_video_usecase_provider.dart';
 
 class VideoPreviewView extends HookConsumerWidget {
   final String? _videoPath;
-  final _videoService = getIt<VideoService>();
 
-  VideoPreviewView({
+  const VideoPreviewView({
     super.key,
     required String? videoPath,
   }) : _videoPath = videoPath;
@@ -36,6 +37,7 @@ class VideoPreviewView extends HookConsumerWidget {
     }, []);
 
     return Scaffold(
+      appBar: _buildAppBar(context, ref, videoPlayerController),
       body: videoPlayer.when(
         data: (controller) {
           videoPlayerController.value = controller;
@@ -53,7 +55,6 @@ class VideoPreviewView extends HookConsumerWidget {
           );
         },
       ),
-      appBar: _buildAppBar(context, videoPlayerController),
       floatingActionButton: videoPlayerController.value == null
           ? null
           : FloatingActionButton(
@@ -70,6 +71,7 @@ class VideoPreviewView extends HookConsumerWidget {
 
   AppBar _buildAppBar(
     BuildContext context,
+    WidgetRef ref,
     ValueNotifier<VideoPlayerController?> videoPlayerController,
   ) {
     return AppBar(
@@ -79,13 +81,7 @@ class VideoPreviewView extends HookConsumerWidget {
       leading: IconButton(
         icon: const Icon(Icons.redo),
         onPressed: () async {
-          try {
-            await _retakeVideo(context);
-          } catch (e) {
-            if (context.mounted) {
-              await showErrorDialog(context, e.toString());
-            }
-          }
+          await _retakeVideo(context);
         },
       ),
       actions: [
@@ -94,25 +90,13 @@ class VideoPreviewView extends HookConsumerWidget {
           onPressed: videoPlayerController.value == null
               ? null
               : () async {
-                  try {
-                    await _saveVideo(context);
-                  } catch (e) {
-                    if (context.mounted) {
-                      await showErrorDialog(context, e.toString());
-                    }
-                  }
+                  await _saveVideo(context, ref);
                 },
         ),
         IconButton(
           icon: const Icon(Icons.exit_to_app),
           onPressed: () async {
-            try {
-              await _returnToGameSelectionView(context);
-            } catch (e) {
-              if (context.mounted) {
-                await showErrorDialog(context, e.toString());
-              }
-            }
+            await _returnToGameSelectionView(context);
           },
         ),
       ],
@@ -120,6 +104,8 @@ class VideoPreviewView extends HookConsumerWidget {
   }
 
   Future<void> _retakeVideo(BuildContext context) async {
+    final videoService = getIt<VideoService>();
+
     final result = await showConfirmationDialog(
       context: context,
       title: '再撮影',
@@ -128,53 +114,66 @@ class VideoPreviewView extends HookConsumerWidget {
     if (!result) return;
 
     if (context.mounted) {
-      await LoadingOverlay.of(context).during(
-        () => _videoService.initializeCamera(),
-      );
-
-      if (context.mounted) context.pushReplacement('/game_view');
+      try {
+        await LoadingOverlay.of(context).during(
+          () => videoService.initializeCamera(),
+        );
+        if (context.mounted) context.pushReplacement('/game_view');
+      } catch (e) {
+        if (context.mounted) {
+          await showErrorDialog(context, e.toString());
+        }
+      }
     }
   }
 
-  Future<void> _saveVideo(BuildContext context) async {
-    final result = await showConfirmationDialog(
+  Future<void> _saveVideo(BuildContext context, WidgetRef ref) async {
+    final isConfirmed = await showConfirmationDialog(
       context: context,
       title: '動画の保存',
       content: '撮影した動画を保存しますか？',
     );
-    if (!result) return;
-
-    if (_videoPath == null) {
-      throw Exception('撮影した動画が見つからないため保存できませんでした。');
-    }
+    if (!isConfirmed) return;
 
     if (context.mounted) {
-      await LoadingOverlay.of(context).during(
-        () => _videoService.saveVideo(_videoPath),
+      final result = await LoadingOverlay.of(context).during(
+        () => ref.read(saveVideoUsecaseProvider).execute(_videoPath),
       );
 
-      if (context.mounted) {
-        await showMessageDialog(
-          context: context,
-          title: '保存完了',
-          content: '動画を保存しました。',
-        );
+      switch (result) {
+        case Success():
+          if (context.mounted) {
+            await showMessageDialog(
+              context: context,
+              title: '保存完了',
+              content: '動画を保存しました。',
+            );
+          }
+          break;
+        case Failure(message: final message):
+          if (context.mounted) showErrorDialog(context, message);
       }
     }
   }
 
   Future<void> _returnToGameSelectionView(BuildContext context) async {
-    final result = await showConfirmationDialog(
+    final isConfirmed = await showConfirmationDialog(
       context: context,
       title: '確認',
       content: 'ゲーム選択画面に戻りますか？',
     );
-    if (!result) return;
+    if (!isConfirmed) return;
 
-    final audioService = getIt<AudioService>();
-    await audioService.fadeInStart('bgm');
+    try {
+      final audioService = getIt<AudioService>();
+      await audioService.fadeInStart('bgm');
 
-    if (context.mounted) context.pushReplacement('/');
+      if (context.mounted) context.pushReplacement('/');
+    } catch (e) {
+      if (context.mounted) {
+        await showErrorDialog(context, e.toString());
+      }
+    }
   }
 
   void _togglePlayButton(
