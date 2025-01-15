@@ -5,7 +5,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/permission_handler_service.dart';
 import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/view/game/animal_game.dart';
@@ -16,11 +15,11 @@ import 'package:bebikame/view/game/night_game.dart';
 import 'package:bebikame/view/game/vehicle_game.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/provider/game_provider.dart';
+import 'package:bebikame/view/dialog/confirmation_dialog.dart';
+import 'package:bebikame/view/dialog/error_dialog.dart';
 
 class GamePreviewView extends ConsumerWidget {
-  final _dialogService = getIt<DialogService>();
-
-  GamePreviewView({super.key});
+  const GamePreviewView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,7 +38,7 @@ class GamePreviewView extends ConsumerWidget {
                 await _handleStartRecordingButtonPress(context);
               } catch (e) {
                 if (context.mounted) {
-                  await _dialogService.showErrorDialog(context, e.toString());
+                  await showErrorDialog(context, e.toString());
                 }
               }
             },
@@ -48,12 +47,12 @@ class GamePreviewView extends ConsumerWidget {
       ),
       body: Center(
         child: switch (gameName) {
-          '動物ゲーム' => AnimalGame(),
-          '乗り物ゲーム' => VehicleGame(),
-          'あわあわゲーム' => BubbleGame(),
-          '夜空ゲーム' => NightGame(),
-          '花火ゲーム' => FireworksGame(),
-          '音楽ゲーム' => MusicGame(),
+          '動物ゲーム' => const AnimalGame(),
+          '乗り物ゲーム' => const VehicleGame(),
+          'あわあわゲーム' => const BubbleGame(),
+          '夜空ゲーム' => const NightGame(),
+          '花火ゲーム' => const FireworksGame(),
+          '音楽ゲーム' => const MusicGame(),
           _ => const Text('なし'),
         },
       ),
@@ -61,8 +60,11 @@ class GamePreviewView extends ConsumerWidget {
   }
 
   Future<void> _handleStartRecordingButtonPress(BuildContext context) async {
-    final result = await _dialogService.showConfirmationDialog(
-        context, 'ゲーム開始', 'このゲームで録画を開始しますか？', '開始する', 'キャンセル');
+    final result = await showConfirmationDialog(
+      context: context,
+      title: 'ゲーム開始',
+      content: 'このゲームで録画を開始しますか？',
+    );
     if (!result) return;
 
     if (context.mounted) await _prepareRecording(context);
@@ -95,7 +97,7 @@ class GamePreviewView extends ConsumerWidget {
   }
 
   Future<void> _handlePermissionDenied(BuildContext context) async {
-    await _dialogService.showErrorDialog(
+    await showErrorDialog(
       context,
       'カメラ、マイク、フォトライブラリへのアクセスが全て許可されていません。\n'
       '動画を撮影するために設定から全てのアクセスを許可してください。',

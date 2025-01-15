@@ -6,16 +6,17 @@ import 'package:bebikame/get_it.dart';
 import 'package:bebikame/model/game.dart';
 import 'package:bebikame/provider/is_enable_in_app_purchase_provider.dart';
 import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
 import 'package:bebikame/view/widget/game_card.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/provider/game_provider.dart';
 import 'package:bebikame/view/widget/unable_game_card.dart';
+import 'package:bebikame/view/dialog/confirmation_dialog.dart';
+import 'package:bebikame/view/dialog/error_dialog.dart';
+import 'package:bebikame/view/dialog/setting_dialog.dart';
 
 class GameSelectionView extends ConsumerWidget {
-  final _dialogService = getIt<DialogService>();
   final _inAppPurchaseService = getIt<InAppPurchaseService>();
 
   GameSelectionView({super.key});
@@ -38,7 +39,7 @@ class GameSelectionView extends ConsumerWidget {
                 await _handleSettingButtonPress(context, ref);
               } catch (e) {
                 if (context.mounted) {
-                  _dialogService.showErrorDialog(context, e.toString());
+                  showErrorDialog(context, e.toString());
                 }
               }
             },
@@ -69,7 +70,7 @@ class GameSelectionView extends ConsumerWidget {
                                 context, ref, game[index]);
                           } catch (e) {
                             if (context.mounted) {
-                              _dialogService.showErrorDialog(
+                              showErrorDialog(
                                 context,
                                 e.toString(),
                               );
@@ -91,12 +92,10 @@ class GameSelectionView extends ConsumerWidget {
     Game game,
   ) async {
     if (game.isLocked) {
-      final result = await _dialogService.showConfirmationDialog(
-        context,
-        game.name,
-        'このゲームはロックされています。\n購入してロックを解除しますか？',
-        '購入する',
-        'キャンセル',
+      final result = await showConfirmationDialog(
+        context: context,
+        title: game.name,
+        content: 'このゲームはロックされています。\n購入してロックを解除しますか？',
       );
       if (!result) return;
 
@@ -144,7 +143,7 @@ class GameSelectionView extends ConsumerWidget {
     final sharedPrefService = getIt<SharedPreferencesService>();
     final savedShootingTime = await sharedPrefService.getShootingTime();
     if (context.mounted) {
-      final result = await _dialogService.showSettingsDialog(
+      final result = await showSettingsDialog(
         context,
         savedShootingTime,
         () {

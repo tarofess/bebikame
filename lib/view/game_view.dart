@@ -9,7 +9,6 @@ import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/timer_service.dart';
 import 'package:bebikame/service/video_service.dart';
-import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/view/game/animal_game.dart';
 import 'package:bebikame/view/game/bubble_game.dart';
 import 'package:bebikame/view/game/fireworks_game.dart';
@@ -21,6 +20,7 @@ import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/provider/game_provider.dart';
 import 'package:bebikame/provider/start_recording_provider.dart';
 import 'package:bebikame/view/widget/recording_progress_bar.dart';
+import 'package:bebikame/view/dialog/error_dialog.dart';
 
 class GameView extends HookConsumerWidget {
   final _videoService = getIt<VideoService>();
@@ -70,12 +70,12 @@ class GameView extends HookConsumerWidget {
       body: Stack(
         children: [
           switch (gameName) {
-            '動物ゲーム' => AnimalGame(),
-            '乗り物ゲーム' => VehicleGame(),
-            'あわあわゲーム' => BubbleGame(),
-            '夜空ゲーム' => NightGame(),
-            '花火ゲーム' => FireworksGame(),
-            '音楽ゲーム' => MusicGame(),
+            '動物ゲーム' => const AnimalGame(),
+            '乗り物ゲーム' => const VehicleGame(),
+            'あわあわゲーム' => const BubbleGame(),
+            '夜空ゲーム' => const NightGame(),
+            '花火ゲーム' => const FireworksGame(),
+            '音楽ゲーム' => const MusicGame(),
             _ => const Text('なし'),
           },
           startRecording.when(
@@ -154,9 +154,8 @@ class GameView extends HookConsumerWidget {
   }
 
   void _goBack(BuildContext context, Object e) {
-    final dialogService = getIt<DialogService>();
     context.pop();
-    dialogService.showErrorDialog(context, '$e\nゲーム選択画面に戻ります。');
+    showErrorDialog(context, '$e\nゲーム選択画面に戻ります。');
   }
 
   Future<void> _stopRecording(BuildContext context) async {
