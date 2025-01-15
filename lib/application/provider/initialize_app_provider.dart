@@ -16,10 +16,12 @@ final _audioService = getIt<AudioService>();
 final _inAppPurchaseService = getIt<InAppPurchaseService>();
 
 final initializeAppProvider = FutureProvider.autoDispose((ref) async {
+  final isAppInPurchaseAvailable = await _inAppPurchaseService.initialize();
+  ref.read(isEnableInAppPurchaseProvider.notifier).state =
+      isAppInPurchaseAvailable;
+
   await setupFirebase();
   await _audioService.play('bgm', loop: true, volume: 0.3);
-  ref.read(isEnableInAppPurchaseProvider.notifier).state =
-      await _inAppPurchaseService.initialize();
 });
 
 Future<void> setupFirebase() async {

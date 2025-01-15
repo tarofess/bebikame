@@ -13,6 +13,7 @@ import 'package:bebikame/view/dialog/confirmation_dialog.dart';
 import 'package:bebikame/view/dialog/error_dialog.dart';
 import 'package:bebikame/model/result.dart';
 import 'package:bebikame/view/provider/prepare_recording_usecase.dart';
+import 'package:bebikame/view/widget/loading_overlay.dart';
 
 class GamePreviewView extends ConsumerWidget {
   const GamePreviewView({super.key});
@@ -37,14 +38,20 @@ class GamePreviewView extends ConsumerWidget {
               );
               if (!isConfirmed) return;
 
-              final result =
-                  await ref.read(prepareRecordingUsecaseProvider).execute();
-              switch (result) {
-                case Success():
-                  if (context.mounted) context.pushReplacement('/game_view');
-                  break;
-                case Failure(message: final message):
-                  if (context.mounted) await showErrorDialog(context, message);
+              if (context.mounted) {
+                final result = await LoadingOverlay.of(context).during(
+                  () => ref.read(prepareRecordingUsecaseProvider).execute(),
+                );
+
+                switch (result) {
+                  case Success():
+                    if (context.mounted) context.pushReplacement('/game_view');
+                    break;
+                  case Failure(message: final message):
+                    if (context.mounted) {
+                      await showErrorDialog(context, message);
+                    }
+                }
               }
             },
           ),
