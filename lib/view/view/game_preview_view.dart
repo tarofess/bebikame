@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:permission_handler/permission_handler.dart';
 
-import 'package:bebikame/service/get_it.dart';
-import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/service/permission_handler_service.dart';
-import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/view/game/animal_game.dart';
 import 'package:bebikame/view/game/bubble_game.dart';
 import 'package:bebikame/view/game/fireworks_game.dart';
 import 'package:bebikame/view/game/music_game.dart';
 import 'package:bebikame/view/game/night_game.dart';
 import 'package:bebikame/view/game/vehicle_game.dart';
-import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/application/provider/game_notifier.dart';
 import 'package:bebikame/view/dialog/confirmation_dialog.dart';
 import 'package:bebikame/view/dialog/error_dialog.dart';
+import 'package:bebikame/model/result.dart';
+import 'package:bebikame/view/provider/prepare_recording_usecase.dart';
 
 class GamePreviewView extends ConsumerWidget {
   const GamePreviewView({super.key});
@@ -34,7 +30,22 @@ class GamePreviewView extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () async {
-              await _confirmStartRecording(context);
+              final isConfirmed = await showConfirmationDialog(
+                context: context,
+                title: 'ゲーム開始',
+                content: 'このゲームで録画を開始しますか？',
+              );
+              if (!isConfirmed) return;
+
+              final result =
+                  await ref.read(prepareRecordingUsecaseProvider).execute();
+              switch (result) {
+                case Success():
+                  if (context.mounted) context.pushReplacement('/game_view');
+                  break;
+                case Failure(message: final message):
+                  if (context.mounted) await showErrorDialog(context, message);
+              }
             },
           ),
         ],
@@ -51,56 +62,5 @@ class GamePreviewView extends ConsumerWidget {
         },
       ),
     );
-  }
-
-  Future<void> _confirmStartRecording(BuildContext context) async {
-    try {
-      final result = await showConfirmationDialog(
-        context: context,
-        title: 'ゲーム開始',
-        content: 'このゲームで録画を開始しますか？',
-      );
-      if (!result) return;
-
-      if (context.mounted) await _prepareRecording(context);
-    } catch (e) {
-      if (context.mounted) await showErrorDialog(context, e.toString());
-    }
-  }
-
-  Future<void> _prepareRecording(BuildContext context) async {
-    final permissionHandlerService = getIt<PermissionHandlerService>();
-    final isAllPermissionsGranted =
-        await permissionHandlerService.requestPermissions();
-
-    if (isAllPermissionsGranted) {
-      if (context.mounted) await _handlePermissionGranted(context);
-    } else {
-      if (context.mounted) await _handlePermissionDenied(context);
-    }
-  }
-
-  Future<void> _handlePermissionGranted(BuildContext context) async {
-    final videoService = getIt<VideoService>();
-    final audioService = getIt<AudioService>();
-    await LoadingOverlay.of(context).during(
-      () async {
-        await videoService.initializeCamera();
-        await audioService.fadeOutStop('bgm');
-      },
-    );
-    if (context.mounted) {
-      context.pushReplacement('/game_view');
-    }
-  }
-
-  Future<void> _handlePermissionDenied(BuildContext context) async {
-    await showErrorDialog(
-      context,
-      'カメラ、マイク、フォトライブラリへのアクセスが全て許可されていません。\n'
-      '動画を撮影するために設定から全てのアクセスを許可してください。',
-    );
-
-    openAppSettings();
   }
 }
