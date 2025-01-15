@@ -4,12 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
-import 'package:bebikame/get_it.dart';
+import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/view/widget/loading_indicator.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
-import 'package:bebikame/provider/video_player_provider.dart';
+import 'package:bebikame/application/provider/video_player_provider.dart';
 import 'package:bebikame/view/dialog/confirmation_dialog.dart';
 import 'package:bebikame/view/dialog/error_dialog.dart';
 import 'package:bebikame/view/dialog/message_dialog.dart';
