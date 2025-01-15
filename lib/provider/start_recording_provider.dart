@@ -1,4 +1,4 @@
-import 'package:bebikame/config/get_it.dart';
+import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
 import 'package:bebikame/service/video_service.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

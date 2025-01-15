@@ -1,4 +1,4 @@
-import 'package:bebikame/config/get_it.dart';
+import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:flutter/material.dart';

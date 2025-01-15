@@ -1,15 +1,15 @@
 import 'dart:io';
-
-import 'package:bebikame/config/get_it.dart';
-import 'package:bebikame/config/theme.dart';
-import 'package:bebikame/view/game_selection_view.dart';
-import 'package:bebikame/view/widget/loading_indicator.dart';
-import 'package:bebikame/provider/initialize_app_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:bebikame/get_it.dart';
+import 'package:bebikame/view/theme/theme.dart';
+import 'package:bebikame/view/game_selection_view.dart';
+import 'package:bebikame/view/widget/loading_indicator.dart';
+import 'package:bebikame/provider/initialize_app_provider.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();

@@ -1,4 +1,4 @@
-import 'package:bebikame/config/get_it.dart';
+import 'package:bebikame/get_it.dart';
 import 'package:bebikame/model/game.dart';
 import 'package:bebikame/provider/is_enable_in_app_purchase_provider.dart';
 import 'package:bebikame/service/audio_service.dart';

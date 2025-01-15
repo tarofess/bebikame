@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:bebikame/config/env/env.dart';
+import 'package:bebikame/env/env.dart';
 import 'package:bebikame/model/game.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
