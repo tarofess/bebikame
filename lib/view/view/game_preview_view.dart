@@ -34,13 +34,7 @@ class GamePreviewView extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () async {
-              try {
-                await _handleStartRecordingButtonPress(context);
-              } catch (e) {
-                if (context.mounted) {
-                  await showErrorDialog(context, e.toString());
-                }
-              }
+              await _confirmStartRecording(context);
             },
           ),
         ],
@@ -59,15 +53,19 @@ class GamePreviewView extends ConsumerWidget {
     );
   }
 
-  Future<void> _handleStartRecordingButtonPress(BuildContext context) async {
-    final result = await showConfirmationDialog(
-      context: context,
-      title: 'ゲーム開始',
-      content: 'このゲームで録画を開始しますか？',
-    );
-    if (!result) return;
+  Future<void> _confirmStartRecording(BuildContext context) async {
+    try {
+      final result = await showConfirmationDialog(
+        context: context,
+        title: 'ゲーム開始',
+        content: 'このゲームで録画を開始しますか？',
+      );
+      if (!result) return;
 
-    if (context.mounted) await _prepareRecording(context);
+      if (context.mounted) await _prepareRecording(context);
+    } catch (e) {
+      if (context.mounted) await showErrorDialog(context, e.toString());
+    }
   }
 
   Future<void> _prepareRecording(BuildContext context) async {
@@ -102,6 +100,7 @@ class GamePreviewView extends ConsumerWidget {
       'カメラ、マイク、フォトライブラリへのアクセスが全て許可されていません。\n'
       '動画を撮影するために設定から全てのアクセスを許可してください。',
     );
+
     openAppSettings();
   }
 }

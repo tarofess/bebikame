@@ -97,7 +97,9 @@ Future<int?> showSettingsDialog(
 }
 
 Widget _buildInAppPurchaseRestoreButton(
-    BuildContext context, VoidCallback updateGridItems) {
+  BuildContext context,
+  VoidCallback updateGridItems,
+) {
   final inAppPurchaseService = getIt<InAppPurchaseService>();
 
   return TextButton(
@@ -129,6 +131,7 @@ Widget _buildInAppPurchaseRestoreButton(
                 title: '復元成功',
                 content: '購入済み商品を復元しました。',
               );
+
               updateGridItems();
             } else {
               showMessageDialog(
