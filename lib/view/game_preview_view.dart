@@ -1,7 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
-import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/service/permission_handler_service.dart';
 import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/view/game/animal_game.dart';
@@ -10,12 +14,8 @@ import 'package:bebikame/view/game/fireworks_game.dart';
 import 'package:bebikame/view/game/music_game.dart';
 import 'package:bebikame/view/game/night_game.dart';
 import 'package:bebikame/view/game/vehicle_game.dart';
-import 'package:bebikame/view/game_view.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/provider/game_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class GamePreviewView extends ConsumerWidget {
   final _dialogService = getIt<DialogService>();
@@ -83,7 +83,6 @@ class GamePreviewView extends ConsumerWidget {
   Future<void> _handlePermissionGranted(BuildContext context) async {
     final videoService = getIt<VideoService>();
     final audioService = getIt<AudioService>();
-    final navigationService = getIt<NavigationService>();
     await LoadingOverlay.of(context).during(
       () async {
         await videoService.initializeCamera();
@@ -91,8 +90,7 @@ class GamePreviewView extends ConsumerWidget {
       },
     );
     if (context.mounted) {
-      navigationService.pushReplacementWithAnimationFromBottom(
-          context, GameView());
+      context.pushReplacement('/game_view');
     }
   }
 

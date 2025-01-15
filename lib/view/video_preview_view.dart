@@ -1,21 +1,19 @@
-import 'package:bebikame/get_it.dart';
-import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/service/dialog_service.dart';
-import 'package:bebikame/service/navigation_service.dart';
-import 'package:bebikame/service/video_service.dart';
-import 'package:bebikame/view/game_selection_view.dart';
-import 'package:bebikame/view/game_view.dart';
-import 'package:bebikame/view/widget/loading_indicator.dart';
-import 'package:bebikame/view/widget/loading_overlay.dart';
-import 'package:bebikame/provider/video_player_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
+import 'package:bebikame/get_it.dart';
+import 'package:bebikame/service/audio_service.dart';
+import 'package:bebikame/service/dialog_service.dart';
+import 'package:bebikame/service/video_service.dart';
+import 'package:bebikame/view/widget/loading_indicator.dart';
+import 'package:bebikame/view/widget/loading_overlay.dart';
+import 'package:bebikame/provider/video_player_provider.dart';
+
 class VideoPreviewView extends HookConsumerWidget {
   final String? _videoPath;
-  final _navigationService = getIt<NavigationService>();
   final _dialogService = getIt<DialogService>();
   final _videoService = getIt<VideoService>();
 
@@ -60,8 +58,10 @@ class VideoPreviewView extends HookConsumerWidget {
     );
   }
 
-  AppBar _buildAppBar(BuildContext context,
-      ValueNotifier<VideoPlayerController?> videoPlayerController) {
+  AppBar _buildAppBar(
+    BuildContext context,
+    ValueNotifier<VideoPlayerController?> videoPlayerController,
+  ) {
     return AppBar(
       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       title: const Text('ビデオプレビュー'),
@@ -120,10 +120,7 @@ class VideoPreviewView extends HookConsumerWidget {
         () => _videoService.initializeCamera(),
       );
       if (context.mounted) {
-        _navigationService.pushReplacementWithAnimationFromBottom(
-          context,
-          GameView(),
-        );
+        context.pushReplacement('/game_view');
       }
     }
   }
@@ -155,13 +152,14 @@ class VideoPreviewView extends HookConsumerWidget {
     final audioService = getIt<AudioService>();
     await audioService.fadeInStart('bgm');
     if (context.mounted) {
-      _navigationService.pushAndRemoveUntil(context, GameSelectionView());
+      context.pushReplacement('/');
     }
   }
 
   void _togglePlayButton(
-      ValueNotifier<VideoPlayerController?> videoPlayerController,
-      ValueNotifier<bool> isVideoPlaying) {
+    ValueNotifier<VideoPlayerController?> videoPlayerController,
+    ValueNotifier<bool> isVideoPlaying,
+  ) {
     if (videoPlayerController.value != null) {
       isVideoPlaying.value
           ? videoPlayerController.value!.pause()

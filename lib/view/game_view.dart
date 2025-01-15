@@ -1,30 +1,28 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/timer_service.dart';
 import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
-import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/view/game/animal_game.dart';
 import 'package:bebikame/view/game/bubble_game.dart';
 import 'package:bebikame/view/game/fireworks_game.dart';
 import 'package:bebikame/view/game/music_game.dart';
 import 'package:bebikame/view/game/night_game.dart';
 import 'package:bebikame/view/game/vehicle_game.dart';
-import 'package:bebikame/view/video_preview_view.dart';
 import 'package:bebikame/view/widget/loading_indicator.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/provider/game_provider.dart';
 import 'package:bebikame/provider/start_recording_provider.dart';
 import 'package:bebikame/view/widget/recording_progress_bar.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameView extends HookConsumerWidget {
-  final _navigationService = getIt<NavigationService>();
   final _videoService = getIt<VideoService>();
   final _timerService = getIt<TimerService>();
 
@@ -157,7 +155,7 @@ class GameView extends HookConsumerWidget {
 
   void _goBack(BuildContext context, Object e) {
     final dialogService = getIt<DialogService>();
-    _navigationService.pop(context);
+    context.pop();
     dialogService.showErrorDialog(context, '$e\nゲーム選択画面に戻ります。');
   }
 
@@ -166,8 +164,10 @@ class GameView extends HookConsumerWidget {
       await LoadingOverlay.of(context).during(() async {
         final videoPath = await _videoService.stopRecording();
         if (context.mounted) {
-          _navigationService.pushAndRemoveUntil(
-              context, VideoPreviewView(videoPath: videoPath));
+          context.pushReplacement(
+            '/video_preview_view',
+            extra: {'videoPath': videoPath},
+          );
         }
       });
     } catch (e) {
