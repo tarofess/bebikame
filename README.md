@@ -1,16 +1,18 @@
-# bebikame
+# べびかめ！
 
-A new Flutter project.
+## 概要
+赤ちゃんがゲームをしている表情を撮影できる動画撮影アプリです。  
+ミニゲームが動いている裏で動画撮影処理が動いています。  
+マネタイズできるようアプリ内課金を実装して有料ゲームも用意しています。
 
-## Getting Started
+## 要件
 
-This project is a starting point for a Flutter application.
+### OS
+iOS
+Android
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 開発環境
+|  | Tool | Version |
+| --- | --- | --- |
+| フレームワーク | Flutter | 3.24.5 |
+| プログラミング言語 | Dart | 3.6.0 |
