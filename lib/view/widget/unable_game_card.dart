@@ -1,13 +1,12 @@
-import 'package:bebikame/get_it.dart';
-import 'package:bebikame/service/dialog_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'package:bebikame/view/dialog/message_dialog.dart';
+
 class UnableGameCard extends ConsumerWidget {
   final String imagePath;
-  final _dialogService = getIt<DialogService>();
 
-  UnableGameCard({super.key, required this.imagePath});
+  const UnableGameCard({super.key, required this.imagePath});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,10 +16,10 @@ class UnableGameCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
-        onTap: () => _dialogService.showMessageDialog(
-          context,
-          'アプリ内課金アイテム取得エラー',
-          'ネットワークに接続されていないためアプリ内課金の情報が取得できません。\n'
+        onTap: () => showMessageDialog(
+          context: context,
+          title: 'アプリ内課金アイテム取得エラー',
+          content: 'ネットワークに接続されていないためアプリ内課金の情報が取得できません。\n'
               'アプリ内課金アイテムを取得するためにネットワークに接続してからアプリを再起動してください。',
         ),
         child: Stack(

@@ -6,15 +6,16 @@ import 'package:video_player/video_player.dart';
 
 import 'package:bebikame/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/video_service.dart';
 import 'package:bebikame/view/widget/loading_indicator.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/provider/video_player_provider.dart';
+import 'package:bebikame/view/dialog/confirmation_dialog.dart';
+import 'package:bebikame/view/dialog/error_dialog.dart';
+import 'package:bebikame/view/dialog/message_dialog.dart';
 
 class VideoPreviewView extends HookConsumerWidget {
   final String? _videoPath;
-  final _dialogService = getIt<DialogService>();
   final _videoService = getIt<VideoService>();
 
   VideoPreviewView({super.key, required String? videoPath})
@@ -73,7 +74,7 @@ class VideoPreviewView extends HookConsumerWidget {
             await _retakeVideo(context);
           } catch (e) {
             if (context.mounted) {
-              await _dialogService.showErrorDialog(context, e.toString());
+              await showErrorDialog(context, e.toString());
             }
           }
         },
@@ -88,8 +89,7 @@ class VideoPreviewView extends HookConsumerWidget {
                     await _saveVideo(context);
                   } catch (e) {
                     if (context.mounted) {
-                      await _dialogService.showErrorDialog(
-                          context, e.toString());
+                      await showErrorDialog(context, e.toString());
                     }
                   }
                 },
@@ -101,7 +101,7 @@ class VideoPreviewView extends HookConsumerWidget {
               await _returnToGameSelectionView(context);
             } catch (e) {
               if (context.mounted) {
-                await _dialogService.showErrorDialog(context, e.toString());
+                await showErrorDialog(context, e.toString());
               }
             }
           },
@@ -111,8 +111,11 @@ class VideoPreviewView extends HookConsumerWidget {
   }
 
   Future<void> _retakeVideo(BuildContext context) async {
-    final result = await _dialogService.showConfirmationDialog(
-        context, '再撮影', 'もう一度撮影し直しますか？', 'はい', 'いいえ');
+    final result = await showConfirmationDialog(
+      context: context,
+      title: '再撮影',
+      content: 'もう一度撮影し直しますか？',
+    );
     if (!result) return;
 
     if (context.mounted) {
@@ -126,8 +129,11 @@ class VideoPreviewView extends HookConsumerWidget {
   }
 
   Future<void> _saveVideo(BuildContext context) async {
-    final result = await _dialogService.showConfirmationDialog(
-        context, '動画の保存', '撮影した動画を保存しますか？', 'はい', 'いいえ');
+    final result = await showConfirmationDialog(
+      context: context,
+      title: '動画の保存',
+      content: '撮影した動画を保存しますか？',
+    );
     if (!result) return;
 
     if (_videoPath == null) {
@@ -139,14 +145,21 @@ class VideoPreviewView extends HookConsumerWidget {
         () => _videoService.saveVideo(_videoPath),
       );
       if (context.mounted) {
-        await _dialogService.showMessageDialog(context, '保存完了', '動画を保存しました。');
+        await showMessageDialog(
+          context: context,
+          title: '保存完了',
+          content: '動画を保存しました。',
+        );
       }
     }
   }
 
   Future<void> _returnToGameSelectionView(BuildContext context) async {
-    final result = await _dialogService.showConfirmationDialog(
-        context, '確認', 'ゲーム選択画面に戻りますか？', 'はい', 'いいえ');
+    final result = await showConfirmationDialog(
+      context: context,
+      title: '確認',
+      content: 'ゲーム選択画面に戻りますか？',
+    );
     if (!result) return;
 
     final audioService = getIt<AudioService>();

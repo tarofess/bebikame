@@ -1,14 +1,12 @@
-import 'package:bebikame/get_it.dart';
-import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/service/dialog_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class VehicleGame extends HookWidget {
-  final dialogService = getIt<DialogService>();
+import 'package:bebikame/service/audio_service.dart';
+import 'package:bebikame/view/dialog/error_dialog.dart';
 
-  VehicleGame({super.key});
+class VehicleGame extends HookWidget {
+  const VehicleGame({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +28,7 @@ class VehicleGame extends HookWidget {
       try {
         await audioService.play('vehicle/$fileName');
       } catch (e) {
-        if (context.mounted) {
-          dialogService.showErrorDialog(context, e.toString());
-        }
+        if (context.mounted) showErrorDialog(context, e.toString());
       }
     }
 
@@ -40,9 +36,7 @@ class VehicleGame extends HookWidget {
       try {
         await audioService.stop('vehicle/$fileName');
       } catch (e) {
-        if (context.mounted) {
-          dialogService.showErrorDialog(context, e.toString());
-        }
+        if (context.mounted) showErrorDialog(context, e.toString());
       }
     }
 

@@ -1,14 +1,12 @@
-import 'package:bebikame/get_it.dart';
-import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/service/dialog_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class NightGame extends HookWidget {
-  final dialogService = getIt<DialogService>();
+import 'package:bebikame/service/audio_service.dart';
+import 'package:bebikame/view/dialog/error_dialog.dart';
 
-  NightGame({super.key});
+class NightGame extends HookWidget {
+  const NightGame({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +35,7 @@ class NightGame extends HookWidget {
         await audioService.stop('night/$fileName');
         await audioService.play('night/$fileName');
       } catch (e) {
-        if (context.mounted) {
-          dialogService.showErrorDialog(context, e.toString());
-        }
+        if (context.mounted) showErrorDialog(context, e.toString());
       }
     }
 
@@ -47,9 +43,7 @@ class NightGame extends HookWidget {
       try {
         await moonAudioService.play('night/$fileName');
       } catch (e) {
-        if (context.mounted) {
-          dialogService.showErrorDialog(context, e.toString());
-        }
+        if (context.mounted) showErrorDialog(context, e.toString());
       }
     }
 
@@ -118,10 +112,11 @@ class NightGame extends HookWidget {
   }
 
   Widget buildMoonImage(
-      String fileName,
-      ValueNotifier<double> scale,
-      Function(ValueNotifier<double>) animateScale,
-      Function(String) playSound) {
+    String fileName,
+    ValueNotifier<double> scale,
+    Function(ValueNotifier<double>) animateScale,
+    Function(String) playSound,
+  ) {
     final rotationController = useAnimationController(
       duration: const Duration(milliseconds: 2500),
     );

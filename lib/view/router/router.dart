@@ -16,7 +16,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/game_preview_view',
-        builder: (context, state) => GamePreviewView(),
+        builder: (context, state) => const GamePreviewView(),
       ),
       GoRoute(
         path: '/game_view',

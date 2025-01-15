@@ -1,14 +1,12 @@
-import 'package:bebikame/get_it.dart';
-import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/service/dialog_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class AnimalGame extends HookWidget {
-  final dialogService = getIt<DialogService>();
+import 'package:bebikame/service/audio_service.dart';
+import 'package:bebikame/view/dialog/error_dialog.dart';
 
-  AnimalGame({super.key});
+class AnimalGame extends HookWidget {
+  const AnimalGame({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +35,7 @@ class AnimalGame extends HookWidget {
         await audioService.stop('animal/$fileName');
         await audioService.play('animal/$fileName');
       } catch (e) {
-        if (context.mounted) {
-          dialogService.showErrorDialog(context, e.toString());
-        }
+        if (context.mounted) showErrorDialog(context, e.toString());
       }
     }
 
