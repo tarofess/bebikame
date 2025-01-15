@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:bebikame/get_it.dart';
+import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/model/game.dart';
-import 'package:bebikame/provider/is_enable_in_app_purchase_provider.dart';
+import 'package:bebikame/application/provider/is_enable_in_app_purchase_provider.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
 import 'package:bebikame/view/widget/game_card.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
-import 'package:bebikame/provider/game_provider.dart';
+import 'package:bebikame/application/provider/game_notifier.dart';
 import 'package:bebikame/view/widget/unable_game_card.dart';
 import 'package:bebikame/view/dialog/confirmation_dialog.dart';
 import 'package:bebikame/view/dialog/error_dialog.dart';

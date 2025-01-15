@@ -4,11 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:bebikame/view/router/router.dart';
-import 'package:bebikame/get_it.dart';
+import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/view/theme/theme.dart';
 import 'package:bebikame/view/widget/loading_indicator.dart';
-import 'package:bebikame/view/error_view.dart';
-import 'package:bebikame/provider/initialize_app_provider.dart';
+import 'package:bebikame/view/view/error_view.dart';
+import 'package:bebikame/application/provider/initialize_app_provider.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();

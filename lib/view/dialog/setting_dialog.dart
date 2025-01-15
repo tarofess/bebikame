@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:bebikame/get_it.dart';
+import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
 import 'package:bebikame/view/dialog/confirmation_dialog.dart';
 import 'package:bebikame/view/dialog/error_dialog.dart';

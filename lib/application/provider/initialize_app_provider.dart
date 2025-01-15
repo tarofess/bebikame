@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:bebikame/get_it.dart';
+import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/firebase_options.dart';
-import 'package:bebikame/provider/is_enable_in_app_purchase_provider.dart';
+import 'package:bebikame/application/provider/is_enable_in_app_purchase_provider.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
 

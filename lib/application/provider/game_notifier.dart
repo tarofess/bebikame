@@ -1,8 +1,9 @@
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'package:bebikame/env/env.dart';
-import 'package:bebikame/get_it.dart';
+import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/model/game.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameNotifier extends Notifier<List<Game>> {
   final _inAppPurchaseService = getIt<InAppPurchaseService>();

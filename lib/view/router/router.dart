@@ -2,10 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:bebikame/view/game_preview_view.dart';
-import 'package:bebikame/view/game_selection_view.dart';
-import 'package:bebikame/view/game_view.dart';
-import 'package:bebikame/view/video_preview_view.dart';
+import 'package:bebikame/view/view/game_preview_view.dart';
+import 'package:bebikame/view/view/game_selection_view.dart';
+import 'package:bebikame/view/view/game_view.dart';
+import 'package:bebikame/view/view/video_preview_view.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
