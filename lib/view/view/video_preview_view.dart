@@ -18,8 +18,10 @@ class VideoPreviewView extends HookConsumerWidget {
   final String? _videoPath;
   final _videoService = getIt<VideoService>();
 
-  VideoPreviewView({super.key, required String? videoPath})
-      : _videoPath = videoPath;
+  VideoPreviewView({
+    super.key,
+    required String? videoPath,
+  }) : _videoPath = videoPath;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,22 +41,29 @@ class VideoPreviewView extends HookConsumerWidget {
           videoPlayerController.value = controller;
           return VideoPlayer(controller);
         },
-        loading: () => const LoadingIndicator(),
-        error: (e, _) => Center(
-          child: Text(
-            e.toString(),
-            style: const TextStyle(fontSize: 18),
-          ),
-        ),
+        loading: () {
+          return const LoadingIndicator();
+        },
+        error: (e, stackTrace) {
+          return Center(
+            child: Text(
+              e.toString(),
+              style: const TextStyle(fontSize: 18),
+            ),
+          );
+        },
       ),
       appBar: _buildAppBar(context, videoPlayerController),
       floatingActionButton: videoPlayerController.value == null
           ? null
           : FloatingActionButton(
-              child:
-                  Icon(isVideoPlaying.value ? Icons.pause : Icons.play_arrow),
-              onPressed: () =>
-                  _togglePlayButton(videoPlayerController, isVideoPlaying),
+              child: Icon(
+                isVideoPlaying.value ? Icons.pause : Icons.play_arrow,
+              ),
+              onPressed: () => _togglePlayButton(
+                videoPlayerController,
+                isVideoPlaying,
+              ),
             ),
     );
   }
@@ -122,9 +131,8 @@ class VideoPreviewView extends HookConsumerWidget {
       await LoadingOverlay.of(context).during(
         () => _videoService.initializeCamera(),
       );
-      if (context.mounted) {
-        context.pushReplacement('/game_view');
-      }
+
+      if (context.mounted) context.pushReplacement('/game_view');
     }
   }
 
@@ -144,6 +152,7 @@ class VideoPreviewView extends HookConsumerWidget {
       await LoadingOverlay.of(context).during(
         () => _videoService.saveVideo(_videoPath),
       );
+
       if (context.mounted) {
         await showMessageDialog(
           context: context,
@@ -164,9 +173,8 @@ class VideoPreviewView extends HookConsumerWidget {
 
     final audioService = getIt<AudioService>();
     await audioService.fadeInStart('bgm');
-    if (context.mounted) {
-      context.pushReplacement('/');
-    }
+
+    if (context.mounted) context.pushReplacement('/');
   }
 
   void _togglePlayButton(
@@ -177,6 +185,7 @@ class VideoPreviewView extends HookConsumerWidget {
       isVideoPlaying.value
           ? videoPlayerController.value!.pause()
           : videoPlayerController.value!.play();
+
       isVideoPlaying.value = !isVideoPlaying.value;
     }
   }

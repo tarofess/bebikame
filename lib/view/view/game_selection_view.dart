@@ -35,13 +35,7 @@ class GameSelectionView extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () async {
-              try {
-                await _handleSettingButtonPress(context, ref);
-              } catch (e) {
-                if (context.mounted) {
-                  showErrorDialog(context, e.toString());
-                }
-              }
+              await _showSettings(context, ref);
             },
           ),
         ],
@@ -67,7 +61,10 @@ class GameSelectionView extends ConsumerWidget {
                         onTap: () async {
                           try {
                             await _handleGridTilePress(
-                                context, ref, game[index]);
+                              context,
+                              ref,
+                              game[index],
+                            );
                           } catch (e) {
                             if (context.mounted) {
                               showErrorDialog(
@@ -136,23 +133,29 @@ class GameSelectionView extends ConsumerWidget {
     }
   }
 
-  Future<void> _handleSettingButtonPress(
+  Future<void> _showSettings(
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final sharedPrefService = getIt<SharedPreferencesService>();
-    final savedShootingTime = await sharedPrefService.getShootingTime();
-    if (context.mounted) {
-      final result = await showSettingsDialog(
-        context,
-        savedShootingTime,
-        () {
-          ref.read(isEnableInAppPurchaseProvider.notifier).state = true;
-          ref.read(gameProvider.notifier).updateGameLockStatus();
-        },
-      );
-      if (result != null) {
-        await sharedPrefService.saveShootingTime(result);
+    try {
+      final sharedPrefService = getIt<SharedPreferencesService>();
+      final savedShootingTime = await sharedPrefService.getShootingTime();
+      if (context.mounted) {
+        final result = await showSettingsDialog(
+          context,
+          savedShootingTime,
+          () {
+            ref.read(isEnableInAppPurchaseProvider.notifier).state = true;
+            ref.read(gameProvider.notifier).updateGameLockStatus();
+          },
+        );
+        if (result != null) {
+          await sharedPrefService.saveShootingTime(result);
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showErrorDialog(context, e.toString());
       }
     }
   }
@@ -164,9 +167,8 @@ class GameSelectionView extends ConsumerWidget {
   ) async {
     final audioService = getIt<AudioService>();
     await audioService.play('button_tap');
+
     ref.read(gameProvider.notifier).updateGameSelected(game.name);
-    if (context.mounted) {
-      context.push('/game_preview_view');
-    }
+    if (context.mounted) context.push('/game_preview_view');
   }
 }
