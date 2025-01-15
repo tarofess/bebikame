@@ -26,7 +26,7 @@ class VideoPreviewView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoPlayer = ref.watch(videoPlayerProvider(_videoPath));
+    final videoPlayerState = ref.watch(videoPlayerProvider(_videoPath));
     final videoPlayerController = useState<VideoPlayerController?>(null);
     final isVideoPlaying = useState(false);
 
@@ -38,7 +38,7 @@ class VideoPreviewView extends HookConsumerWidget {
 
     return Scaffold(
       appBar: _buildAppBar(context, ref, videoPlayerController),
-      body: videoPlayer.when(
+      body: videoPlayerState.when(
         data: (controller) {
           videoPlayerController.value = controller;
           return VideoPlayer(controller);
