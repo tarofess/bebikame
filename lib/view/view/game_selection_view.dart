@@ -6,7 +6,6 @@ import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/model/game.dart';
 import 'package:bebikame/application/provider/is_enable_in_app_purchase_provider.dart';
 import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/service/in_app_purchase_service.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
 import 'package:bebikame/view/widget/game_card.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
@@ -15,11 +14,11 @@ import 'package:bebikame/view/widget/unable_game_card.dart';
 import 'package:bebikame/view/dialog/confirmation_dialog.dart';
 import 'package:bebikame/view/dialog/error_dialog.dart';
 import 'package:bebikame/view/dialog/setting_dialog.dart';
+import 'package:bebikame/model/result.dart';
+import 'package:bebikame/view/provider/buy_game_usecase_provider.dart';
 
 class GameSelectionView extends ConsumerWidget {
-  final _inAppPurchaseService = getIt<InAppPurchaseService>();
-
-  GameSelectionView({super.key});
+  const GameSelectionView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -59,20 +58,11 @@ class GameSelectionView extends ConsumerWidget {
                         imagePath: game[index].image,
                         isLocked: game[index].isLocked,
                         onTap: () async {
-                          try {
-                            await _handleGridTilePress(
-                              context,
-                              ref,
-                              game[index],
-                            );
-                          } catch (e) {
-                            if (context.mounted) {
-                              showErrorDialog(
-                                context,
-                                e.toString(),
-                              );
-                            }
-                          }
+                          await _handlePressedGridTile(
+                            context,
+                            ref,
+                            game[index],
+                          );
                         },
                       );
               },
@@ -83,53 +73,39 @@ class GameSelectionView extends ConsumerWidget {
     );
   }
 
-  Future<void> _handleGridTilePress(
+  Future<void> _handlePressedGridTile(
     BuildContext context,
     WidgetRef ref,
     Game game,
   ) async {
-    if (game.isLocked) {
-      final result = await showConfirmationDialog(
+    if (!game.isLocked) {
+      await _goToGamePreviewView(context, ref, game);
+      return;
+    }
+
+    if (context.mounted) {
+      final isConfirmed = await showConfirmationDialog(
         context: context,
         title: game.name,
         content: 'このゲームはロックされています。\n購入してロックを解除しますか？',
       );
-      if (!result) return;
+      if (!isConfirmed) return;
 
       if (context.mounted) {
-        final isSuccessPurchase = await LoadingOverlay.of(context).during(
-          () => _handleInAppPurchase(game, ref),
+        final result = await LoadingOverlay.of(context).during(
+          () => ref.read(buyGameUsecaseProvider).execute(game),
         );
-        if (!isSuccessPurchase) {
-          throw Exception('購入処理が完了できませんでした。\n再度お試しください。');
+
+        if (result == null) return;
+
+        switch (result) {
+          case Success():
+            break;
+          case Failure(message: final message):
+            if (context.mounted) showErrorDialog(context, message);
+            break;
         }
       }
-    }
-
-    if (context.mounted) await _goToGamePreviewView(context, ref, game);
-  }
-
-  Future<bool> _handleInAppPurchase(Game game, WidgetRef ref) async {
-    try {
-      final purchaseStarted = await _inAppPurchaseService
-          .buyProduct(_inAppPurchaseService.getProductByName(game)!);
-
-      if (!purchaseStarted) {
-        return false;
-      }
-
-      final purchaseResult =
-          await _inAppPurchaseService.purchaseResultStream.first;
-
-      if (purchaseResult && game.name == '花火ゲーム') {
-        ref.read(gameProvider.notifier).unlockedFireWorksGame();
-      } else if (purchaseResult && game.name == '音楽ゲーム') {
-        ref.read(gameProvider.notifier).unlockedMusicGame();
-      }
-
-      return purchaseResult;
-    } catch (e) {
-      throw Exception('購入処理中に予期せぬエラーが発生しました。\n再度お試しください。');
     }
   }
 
@@ -165,10 +141,16 @@ class GameSelectionView extends ConsumerWidget {
     WidgetRef ref,
     Game game,
   ) async {
-    final audioService = getIt<AudioService>();
-    await audioService.play('button_tap');
+    try {
+      final audioService = getIt<AudioService>();
+      await audioService.play('button_tap');
 
-    ref.read(gameProvider.notifier).updateGameSelected(game.name);
-    if (context.mounted) context.push('/game_preview_view');
+      ref.read(gameProvider.notifier).updateGameSelected(game.name);
+      if (context.mounted) context.push('/game_preview_view');
+    } catch (e) {
+      if (context.mounted) {
+        showErrorDialog(context, e.toString());
+      }
+    }
   }
 }
