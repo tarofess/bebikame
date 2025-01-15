@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-ThemeData createTheme() {
+ThemeData createDefaultTheme() {
   return ThemeData(
     colorScheme: ColorScheme.fromSeed(seedColor: Colors.pinkAccent),
     fontFamily: 'HachiMaruPop',

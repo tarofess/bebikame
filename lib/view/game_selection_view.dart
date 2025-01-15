@@ -1,18 +1,18 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'package:bebikame/get_it.dart';
 import 'package:bebikame/model/game.dart';
 import 'package:bebikame/provider/is_enable_in_app_purchase_provider.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/dialog_service.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
-import 'package:bebikame/service/navigation_service.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
-import 'package:bebikame/view/game_preview_view.dart';
 import 'package:bebikame/view/widget/game_card.dart';
 import 'package:bebikame/view/widget/loading_overlay.dart';
 import 'package:bebikame/provider/game_provider.dart';
 import 'package:bebikame/view/widget/unable_game_card.dart';
-import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class GameSelectionView extends ConsumerWidget {
   final _dialogService = getIt<DialogService>();
@@ -86,7 +86,10 @@ class GameSelectionView extends ConsumerWidget {
   }
 
   Future<void> _handleGridTilePress(
-      BuildContext context, WidgetRef ref, Game game) async {
+    BuildContext context,
+    WidgetRef ref,
+    Game game,
+  ) async {
     if (game.isLocked) {
       final result = await _dialogService.showConfirmationDialog(
         context,
@@ -135,7 +138,9 @@ class GameSelectionView extends ConsumerWidget {
   }
 
   Future<void> _handleSettingButtonPress(
-      BuildContext context, WidgetRef ref) async {
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final sharedPrefService = getIt<SharedPreferencesService>();
     final savedShootingTime = await sharedPrefService.getShootingTime();
     if (context.mounted) {
@@ -154,13 +159,15 @@ class GameSelectionView extends ConsumerWidget {
   }
 
   Future<void> _goToGamePreviewView(
-      BuildContext context, WidgetRef ref, Game game) async {
-    final navigationService = getIt<NavigationService>();
+    BuildContext context,
+    WidgetRef ref,
+    Game game,
+  ) async {
     final audioService = getIt<AudioService>();
     await audioService.play('button_tap');
     ref.read(gameProvider.notifier).updateGameSelected(game.name);
     if (context.mounted) {
-      navigationService.push(context, GamePreviewView());
+      context.push('/game_preview_view');
     }
   }
 }
