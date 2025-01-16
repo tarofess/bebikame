@@ -42,9 +42,10 @@ class MyApp extends ConsumerWidget {
             );
           },
           loading: () {
-            return const MaterialApp(
+            return MaterialApp(
               debugShowCheckedModeBanner: false,
-              home: Scaffold(
+              theme: createDefaultTheme(),
+              home: const Scaffold(
                 body: LoadingIndicator(),
               ),
             );
@@ -52,6 +53,7 @@ class MyApp extends ConsumerWidget {
           error: (e, stackTrace) {
             return MaterialApp(
               debugShowCheckedModeBanner: false,
+              theme: createDefaultTheme(),
               home: ErrorView(
                 error: e,
                 retry: () => ref.refresh(initializeAppProvider),
