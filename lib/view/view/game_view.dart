@@ -118,7 +118,7 @@ class GameView extends HookConsumerWidget {
 
   Widget _buildCountdownText(ValueNotifier<int> remainingTime) {
     return Positioned(
-      bottom: 20.h,
+      bottom: 10.h,
       right: 20.w,
       child: Container(
         padding: EdgeInsets.all(8.r),
@@ -139,9 +139,10 @@ class GameView extends HookConsumerWidget {
           builder: (context, value, child) {
             return Text(
               value.toString(),
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
+                fontSize: 18.sp,
               ),
             );
           },
