@@ -8,7 +8,7 @@ class TimerService {
 
   ValueNotifier<int> get remainingTime => _remainingTime;
 
-  void startCountdown(int duration, VoidCallback onComplete) {
+  void startCountdown(int duration, {required VoidCallback onComplete}) {
     if (_isTimerRunning) return;
 
     _remainingTime.value = duration;

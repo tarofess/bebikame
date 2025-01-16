@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -35,6 +36,7 @@ class GameView extends HookConsumerWidget {
     final appLifecycleState = useAppLifecycleState();
 
     useEffect(() {
+      // アプリがバックグラウンドに移動したら録画を終了する
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (appLifecycleState == AppLifecycleState.paused) {
           if (context.mounted) _stopRecording(context);
@@ -80,9 +82,12 @@ class GameView extends HookConsumerWidget {
           },
           startRecording.when(
             data: (shootingTime) {
-              _timerService.startCountdown(shootingTime, () {
-                if (context.mounted) _stopRecording(context);
-              });
+              _timerService.startCountdown(
+                shootingTime,
+                onComplete: () {
+                  if (context.mounted) _stopRecording(context);
+                },
+              );
               return Column(
                 children: [
                   const RecordingProgressBar(),
@@ -96,14 +101,12 @@ class GameView extends HookConsumerWidget {
                 ],
               );
             },
-            loading: () => const LoadingIndicator(),
+            loading: () {
+              return const LoadingIndicator();
+            },
             error: (e, _) {
               WidgetsBinding.instance.addPostFrameCallback((_) async {
-                try {
-                  await _goBackWithBGMFadeIn(context, e);
-                } catch (audioError) {
-                  if (context.mounted) _goBack(context, e);
-                }
+                await _goBackWithBGMFadeIn(context, e);
               });
               return const SizedBox();
             },
@@ -115,13 +118,13 @@ class GameView extends HookConsumerWidget {
 
   Widget _buildCountdownText(ValueNotifier<int> remainingTime) {
     return Positioned(
-      bottom: 20,
-      right: 20,
+      bottom: 20.h,
+      right: 20.w,
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8.r),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -148,14 +151,18 @@ class GameView extends HookConsumerWidget {
   }
 
   Future<void> _goBackWithBGMFadeIn(BuildContext context, Object e) async {
-    final audioService = getIt<AudioService>();
-    await audioService.fadeInStart('bgm');
-    if (context.mounted) _goBack(context, e);
+    try {
+      final audioService = getIt<AudioService>();
+      await audioService.fadeInStart('bgm');
+      if (context.mounted) _goBack(context, e);
+    } catch (audioError) {
+      if (context.mounted) _goBack(context, e);
+    }
   }
 
   void _goBack(BuildContext context, Object e) {
     context.pop();
-    showErrorDialog(context, '$e\nゲーム選択画面に戻ります。');
+    showErrorDialog(context, '$e\nゲーム選択画面に戻りました。');
   }
 
   Future<void> _stopRecording(BuildContext context) async {
