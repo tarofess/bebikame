@@ -16,6 +16,7 @@ import 'package:bebikame/view/dialog/error_dialog.dart';
 import 'package:bebikame/view/dialog/setting_dialog.dart';
 import 'package:bebikame/model/result.dart';
 import 'package:bebikame/view/provider/buy_game_usecase_provider.dart';
+import 'package:bebikame/view/dialog/parental_gate_dialog.dart';
 
 class GameSelectionView extends ConsumerWidget {
   const GameSelectionView({super.key});
@@ -58,7 +59,7 @@ class GameSelectionView extends ConsumerWidget {
                         imagePath: game[index].image,
                         isLocked: game[index].isLocked,
                         onTap: () async {
-                          await _handlePressedGridTile(
+                          await _handleGameSelect(
                             context,
                             ref,
                             game[index],
@@ -73,7 +74,7 @@ class GameSelectionView extends ConsumerWidget {
     );
   }
 
-  Future<void> _handlePressedGridTile(
+  Future<void> _handleGameSelect(
     BuildContext context,
     WidgetRef ref,
     Game game,
@@ -83,14 +84,25 @@ class GameSelectionView extends ConsumerWidget {
       return;
     }
 
+    // 未購入の有料ゲームの場合
     if (context.mounted) {
       final isConfirmed = await showConfirmationDialog(
         context: context,
         title: game.name,
         content: 'このゲームはロックされています。\n購入してロックを解除しますか？',
       );
-      if (!isConfirmed) return;
+      if (!isConfirmed || !context.mounted) return;
 
+      // 保護者かどうかを確認
+      final parentalGateResult = await showParentalGateDialog(context: context);
+      if (parentalGateResult is Failure) {
+        if (context.mounted) {
+          showErrorDialog(context, parentalGateResult.message);
+        }
+        return;
+      }
+
+      // 保護者であれば購入処理
       if (context.mounted) {
         final result = await LoadingOverlay.of(context).during(
           () => ref.read(buyGameUsecaseProvider).execute(game),
