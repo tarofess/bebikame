@@ -10,18 +10,18 @@ import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/timer_service.dart';
 import 'package:bebikame/service/video_service.dart';
-import 'package:bebikame/view/game/animal_game.dart';
-import 'package:bebikame/view/game/bubble_game.dart';
-import 'package:bebikame/view/game/fireworks_game.dart';
-import 'package:bebikame/view/game/music_game.dart';
-import 'package:bebikame/view/game/night_game.dart';
-import 'package:bebikame/view/game/vehicle_game.dart';
-import 'package:bebikame/view/widget/loading_indicator.dart';
-import 'package:bebikame/view/widget/loading_overlay.dart';
+import 'package:bebikame/presentation/game/animal_game.dart';
+import 'package:bebikame/presentation/game/bubble_game.dart';
+import 'package:bebikame/presentation/game/fireworks_game.dart';
+import 'package:bebikame/presentation/game/music_game.dart';
+import 'package:bebikame/presentation/game/night_game.dart';
+import 'package:bebikame/presentation/game/vehicle_game.dart';
+import 'package:bebikame/presentation/widget/loading_indicator.dart';
+import 'package:bebikame/presentation/widget/loading_overlay.dart';
 import 'package:bebikame/application/provider/game_notifier.dart';
 import 'package:bebikame/application/provider/start_recording_provider.dart';
-import 'package:bebikame/view/widget/recording_progress_bar.dart';
-import 'package:bebikame/view/dialog/error_dialog.dart';
+import 'package:bebikame/presentation/widget/recording_progress_bar.dart';
+import 'package:bebikame/presentation/dialog/error_dialog.dart';
 
 class GameView extends HookConsumerWidget {
   final _videoService = getIt<VideoService>();

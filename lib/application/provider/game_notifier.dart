@@ -2,7 +2,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:bebikame/env/env.dart';
 import 'package:bebikame/service/get_it.dart';
-import 'package:bebikame/model/game.dart';
+import 'package:bebikame/domain/game.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
 
 class GameNotifier extends Notifier<List<Game>> {

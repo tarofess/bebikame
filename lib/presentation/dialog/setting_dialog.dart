@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
-import 'package:bebikame/view/dialog/confirmation_dialog.dart';
-import 'package:bebikame/view/dialog/error_dialog.dart';
-import 'package:bebikame/view/dialog/message_dialog.dart';
-import 'package:bebikame/view/widget/loading_overlay.dart';
+import 'package:bebikame/presentation/dialog/confirmation_dialog.dart';
+import 'package:bebikame/presentation/dialog/error_dialog.dart';
+import 'package:bebikame/presentation/dialog/message_dialog.dart';
+import 'package:bebikame/presentation/widget/loading_overlay.dart';
 
 Future<int?> showSettingsDialog(
   BuildContext context,

@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'dart:math';
 
 import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/view/dialog/error_dialog.dart';
+import 'package:bebikame/presentation/dialog/error_dialog.dart';
 
 class FireworksGame extends HookWidget {
   const FireworksGame({super.key});

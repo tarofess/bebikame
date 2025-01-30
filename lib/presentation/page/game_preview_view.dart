@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:bebikame/view/game/animal_game.dart';
-import 'package:bebikame/view/game/bubble_game.dart';
-import 'package:bebikame/view/game/fireworks_game.dart';
-import 'package:bebikame/view/game/music_game.dart';
-import 'package:bebikame/view/game/night_game.dart';
-import 'package:bebikame/view/game/vehicle_game.dart';
+import 'package:bebikame/presentation/game/animal_game.dart';
+import 'package:bebikame/presentation/game/bubble_game.dart';
+import 'package:bebikame/presentation/game/fireworks_game.dart';
+import 'package:bebikame/presentation/game/music_game.dart';
+import 'package:bebikame/presentation/game/night_game.dart';
+import 'package:bebikame/presentation/game/vehicle_game.dart';
 import 'package:bebikame/application/provider/game_notifier.dart';
-import 'package:bebikame/view/dialog/confirmation_dialog.dart';
-import 'package:bebikame/view/dialog/error_dialog.dart';
-import 'package:bebikame/model/result.dart';
-import 'package:bebikame/view/provider/prepare_recording_usecase.dart';
-import 'package:bebikame/view/widget/loading_overlay.dart';
+import 'package:bebikame/presentation/dialog/confirmation_dialog.dart';
+import 'package:bebikame/presentation/dialog/error_dialog.dart';
+import 'package:bebikame/domain/result.dart';
+import 'package:bebikame/application/provider/prepare_recording_usecase.dart';
+import 'package:bebikame/presentation/widget/loading_overlay.dart';
 
 class GamePreviewView extends ConsumerWidget {
   const GamePreviewView({super.key});
