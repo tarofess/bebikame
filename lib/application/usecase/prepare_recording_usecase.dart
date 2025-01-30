@@ -17,7 +17,7 @@ class PrepareRecordingUsecase {
       if (isAllPermissionsGranted) {
         await videoService.initializeCamera();
         await audioService.fadeOutStop('bgm');
-        return const Success(null);
+        return const Success();
       } else {
         return const Failure(
           'カメラ、マイク、フォトライブラリへのアクセスが全て許可されていません。\n'
