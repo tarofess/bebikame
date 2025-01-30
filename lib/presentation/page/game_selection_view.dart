@@ -3,20 +3,20 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:bebikame/service/get_it.dart';
-import 'package:bebikame/model/game.dart';
+import 'package:bebikame/domain/game.dart';
 import 'package:bebikame/application/provider/is_enable_in_app_purchase_provider.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/shared_preferences_service.dart';
-import 'package:bebikame/view/widget/game_card.dart';
-import 'package:bebikame/view/widget/loading_overlay.dart';
+import 'package:bebikame/presentation/widget/game_card.dart';
+import 'package:bebikame/presentation/widget/loading_overlay.dart';
 import 'package:bebikame/application/provider/game_notifier.dart';
-import 'package:bebikame/view/widget/unable_game_card.dart';
-import 'package:bebikame/view/dialog/confirmation_dialog.dart';
-import 'package:bebikame/view/dialog/error_dialog.dart';
-import 'package:bebikame/view/dialog/setting_dialog.dart';
-import 'package:bebikame/model/result.dart';
-import 'package:bebikame/view/provider/buy_game_usecase_provider.dart';
-import 'package:bebikame/view/dialog/parental_gate_dialog.dart';
+import 'package:bebikame/presentation/widget/unable_game_card.dart';
+import 'package:bebikame/presentation/dialog/confirmation_dialog.dart';
+import 'package:bebikame/presentation/dialog/error_dialog.dart';
+import 'package:bebikame/presentation/dialog/setting_dialog.dart';
+import 'package:bebikame/domain/result.dart';
+import 'package:bebikame/application/provider/buy_game_usecase_provider.dart';
+import 'package:bebikame/presentation/dialog/parental_gate_dialog.dart';
 
 class GameSelectionView extends ConsumerWidget {
   const GameSelectionView({super.key});

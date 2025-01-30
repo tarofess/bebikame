@@ -1,6 +1,6 @@
 import 'package:bebikame/application/provider/game_notifier.dart';
-import 'package:bebikame/model/game.dart';
-import 'package:bebikame/model/result.dart';
+import 'package:bebikame/domain/game.dart';
+import 'package:bebikame/domain/result.dart';
 import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/service/in_app_purchase_service.dart';
 

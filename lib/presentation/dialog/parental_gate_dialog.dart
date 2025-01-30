@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-import 'package:bebikame/model/result.dart';
+import 'package:bebikame/domain/result.dart';
 
 Future<Result> showParentalGateDialog({required BuildContext context}) async {
   final random = Random();

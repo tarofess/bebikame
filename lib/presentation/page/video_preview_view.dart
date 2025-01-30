@@ -7,14 +7,14 @@ import 'package:video_player/video_player.dart';
 import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/video_service.dart';
-import 'package:bebikame/view/widget/loading_indicator.dart';
-import 'package:bebikame/view/widget/loading_overlay.dart';
+import 'package:bebikame/presentation/widget/loading_indicator.dart';
+import 'package:bebikame/presentation/widget/loading_overlay.dart';
 import 'package:bebikame/application/provider/video_player_provider.dart';
-import 'package:bebikame/view/dialog/confirmation_dialog.dart';
-import 'package:bebikame/view/dialog/error_dialog.dart';
-import 'package:bebikame/view/dialog/message_dialog.dart';
-import 'package:bebikame/model/result.dart';
-import 'package:bebikame/view/provider/save_video_usecase_provider.dart';
+import 'package:bebikame/presentation/dialog/confirmation_dialog.dart';
+import 'package:bebikame/presentation/dialog/error_dialog.dart';
+import 'package:bebikame/presentation/dialog/message_dialog.dart';
+import 'package:bebikame/domain/result.dart';
+import 'package:bebikame/application/provider/save_video_usecase_provider.dart';
 
 class VideoPreviewView extends HookConsumerWidget {
   final String? _videoPath;

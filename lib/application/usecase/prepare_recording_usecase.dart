@@ -1,4 +1,4 @@
-import 'package:bebikame/model/result.dart';
+import 'package:bebikame/domain/result.dart';
 import 'package:bebikame/service/audio_service.dart';
 import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/service/permission_handler_service.dart';

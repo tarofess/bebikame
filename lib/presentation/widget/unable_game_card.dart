@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:bebikame/view/dialog/message_dialog.dart';
+import 'package:bebikame/presentation/dialog/message_dialog.dart';
 
 class UnableGameCard extends ConsumerWidget {
   final String imagePath;

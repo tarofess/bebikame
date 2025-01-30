@@ -1,4 +1,4 @@
-import 'package:bebikame/view/widget/loading_indicator.dart';
+import 'package:bebikame/presentation/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
 
 class LoadingOverlay {

@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:bebikame/service/audio_service.dart';
-import 'package:bebikame/view/dialog/error_dialog.dart';
+import 'package:bebikame/presentation/dialog/error_dialog.dart';
 
 class MusicGame extends HookWidget {
   const MusicGame({super.key});

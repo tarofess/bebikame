@@ -1,4 +1,4 @@
-import 'package:bebikame/model/result.dart';
+import 'package:bebikame/domain/result.dart';
 import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/service/video_service.dart';
 
