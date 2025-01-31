@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 class LoadingIndicator extends StatefulWidget {
-  const LoadingIndicator({super.key});
+  final String? message;
+
+  const LoadingIndicator({super.key, this.message});
 
   @override
   LoadingIndicatorState createState() => LoadingIndicatorState();
@@ -66,7 +68,7 @@ class LoadingIndicatorState extends State<LoadingIndicator> {
                   Padding(
                     padding: const EdgeInsets.only(left: 20),
                     child: Text(
-                      'ロード中',
+                      widget.message == null ? 'ロード中' : widget.message!,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.white,
                             decoration: TextDecoration.none,
