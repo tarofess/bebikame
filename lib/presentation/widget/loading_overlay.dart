@@ -1,22 +1,27 @@
-import 'package:bebikame/presentation/widget/loading_indicator.dart';
 import 'package:flutter/material.dart';
+
+import 'package:bebikame/presentation/widget/loading_indicator.dart';
 
 class LoadingOverlay {
   final BuildContext _context;
   OverlayEntry? _overlay;
   bool _isLoading = false;
+  String? _message;
 
-  LoadingOverlay._private(this._context);
+  LoadingOverlay._private(this._context, [this._message]);
 
-  factory LoadingOverlay.of(BuildContext context) {
-    return LoadingOverlay._private(context);
+  factory LoadingOverlay.of(BuildContext context, {String? message}) {
+    return LoadingOverlay._private(context, message);
   }
 
-  void show() {
+  void show({String? message}) {
     if (!_isLoading) {
       _isLoading = true;
+      _message = message ?? _message;
       _overlay = OverlayEntry(
-        builder: (context) => const LoadingIndicator(),
+        builder: (context) => LoadingIndicator(
+          message: _message,
+        ),
       );
       Overlay.of(_context).insert(_overlay!);
     }

@@ -104,7 +104,7 @@ class GameSelectionView extends ConsumerWidget {
 
       // 保護者であれば購入処理
       if (context.mounted) {
-        final result = await LoadingOverlay.of(context).during(
+        final result = await LoadingOverlay.of(context, message: '購入中').during(
           () => ref.read(buyGameUsecaseProvider).execute(game),
         );
 

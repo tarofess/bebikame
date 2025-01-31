@@ -133,7 +133,7 @@ class VideoPreviewView extends HookConsumerWidget {
     if (!isConfirmed) return;
 
     if (context.mounted) {
-      final result = await LoadingOverlay.of(context).during(
+      final result = await LoadingOverlay.of(context, message: '保存中').during(
         () => ref.read(saveVideoUsecaseProvider).execute(_videoPath),
       );
 
