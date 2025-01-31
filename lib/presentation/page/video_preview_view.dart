@@ -48,10 +48,7 @@ class VideoPreviewView extends HookConsumerWidget {
         },
         error: (e, stackTrace) {
           return Center(
-            child: Text(
-              e.toString(),
-              style: const TextStyle(fontSize: 18),
-            ),
+            child: Text(e.toString()),
           );
         },
       ),

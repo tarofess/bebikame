@@ -21,25 +21,26 @@ Future<int?> showSettingsDialog(
         builder: (context, setState) {
           return AlertDialog(
             title: const Text('設定', textAlign: TextAlign.center),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('録画時間（秒）'),
-                Slider(
-                  value: currentValue,
-                  min: 1,
-                  max: 60,
-                  divisions: 59,
-                  label: currentValue.round().toString(),
-                  onChanged: (double value) {
-                    setState(() {
-                      currentValue = value;
-                    });
-                  },
-                ),
-                Text('${currentValue.round()}秒',
-                    style: const TextStyle(fontSize: 18)),
-              ],
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('録画時間（秒）'),
+                  Slider(
+                    value: currentValue,
+                    min: 1,
+                    max: 60,
+                    divisions: 59,
+                    label: currentValue.round().toString(),
+                    onChanged: (double value) {
+                      setState(() {
+                        currentValue = value;
+                      });
+                    },
+                  ),
+                  Text('${currentValue.round()}秒'),
+                ],
+              ),
             ),
             actions: [
               Row(
@@ -55,10 +56,7 @@ Future<int?> showSettingsDialog(
                         ),
                       ),
                       onPressed: () => Navigator.of(context).pop(null),
-                      child: const Text(
-                        'キャンセル',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      child: const Text('キャンセル'),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -73,10 +71,7 @@ Future<int?> showSettingsDialog(
                       ),
                       onPressed: () =>
                           Navigator.of(context).pop(currentValue.round()),
-                      child: const Text(
-                        '保存',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      child: const Text('保存'),
                     ),
                   ),
                 ],
@@ -103,6 +98,7 @@ Widget _buildInAppPurchaseRestoreButton(
   final inAppPurchaseService = getIt<InAppPurchaseService>();
 
   return TextButton(
+    child: const Text('購入済み商品の復元'),
     onPressed: () async {
       try {
         final result = await showConfirmationDialog(
@@ -146,6 +142,5 @@ Widget _buildInAppPurchaseRestoreButton(
         if (context.mounted) showErrorDialog(context, e.toString());
       }
     },
-    child: const Text('購入済み商品の復元', style: TextStyle(fontSize: 14)),
   );
 }

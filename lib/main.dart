@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:bebikame/presentation/router/router.dart';
-import 'package:bebikame/presentation/theme/theme.dart';
+import 'package:bebikame/presentation/theme/default_theme.dart';
 import 'package:bebikame/presentation/widget/loading_indicator.dart';
 import 'package:bebikame/presentation/page/error_view.dart';
 import 'package:bebikame/application/provider/initialize_app_provider.dart';

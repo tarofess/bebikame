@@ -45,7 +45,7 @@ Future<Result> showParentalGateDialog({required BuildContext context}) async {
                 ElevatedButton(
                   onPressed: () {
                     if (inputAnswer == answer.toString()) {
-                      Navigator.of(context).pop(const Success(null));
+                      Navigator.of(context).pop(const Success());
                     } else {
                       Navigator.of(context).pop(
                         const Failure(
