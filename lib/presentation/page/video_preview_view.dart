@@ -165,7 +165,7 @@ class VideoPreviewView extends HookConsumerWidget {
       final audioService = getIt<AudioService>();
       await audioService.fadeInStart('bgm');
 
-      if (context.mounted) context.pushReplacement('/');
+      if (context.mounted) context.go('/');
     } catch (e) {
       if (context.mounted) {
         await showErrorDialog(context, e.toString());
