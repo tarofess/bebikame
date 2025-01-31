@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:bebikame/presentation/router/router.dart';
-import 'package:bebikame/service/get_it.dart';
 import 'package:bebikame/presentation/theme/theme.dart';
 import 'package:bebikame/presentation/widget/loading_indicator.dart';
 import 'package:bebikame/presentation/page/error_view.dart';
@@ -14,8 +13,6 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  setupGetIt();
-  await setupOrientations();
   runApp(const ProviderScope(child: MyApp()));
 
   FlutterNativeSplash.remove();
