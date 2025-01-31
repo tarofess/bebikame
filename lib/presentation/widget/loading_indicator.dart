@@ -66,7 +66,7 @@ class LoadingIndicatorState extends State<LoadingIndicator> {
                   Padding(
                     padding: const EdgeInsets.only(left: 20),
                     child: Text(
-                      '処理中です',
+                      'ロード中',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.white,
                             decoration: TextDecoration.none,
