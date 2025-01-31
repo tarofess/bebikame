@@ -15,14 +15,9 @@ class ErrorView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('アプリの初期化に失敗しました。\n再度お試しください。'),
-            SizedBox(height: 16.r),
-            Text(
-              '$error',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 16.r),
+            SizedBox(height: 16.h),
+            Text('$error'),
+            SizedBox(height: 16.h),
             ElevatedButton(
               onPressed: retry,
               child: const Text('リトライ'),

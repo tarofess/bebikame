@@ -139,10 +139,9 @@ class GameView extends HookConsumerWidget {
           builder: (context, value, child) {
             return Text(
               value.toString(),
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
-                fontSize: 18.sp,
               ),
             );
           },

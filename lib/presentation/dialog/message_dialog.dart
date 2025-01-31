@@ -26,10 +26,7 @@ Future<void> showMessageDialog({
                 ),
               ),
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text(
-                'はい',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              child: const Text('はい'),
             ),
           ),
         ],

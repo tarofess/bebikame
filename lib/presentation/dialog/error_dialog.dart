@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Future<void> showErrorDialog(BuildContext context, dynamic error) async {
   await showDialog(
@@ -7,20 +6,15 @@ Future<void> showErrorDialog(BuildContext context, dynamic error) async {
     builder: (BuildContext dialogContext) {
       return AlertDialog(
         title: const Center(
-          child: Text(
-            'エラー発生',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: Text('エラー発生'),
         ),
-        content: Text(error.toString(), style: TextStyle(fontSize: 16.sp)),
+        content: Text(error.toString()),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(dialogContext).pop();
             },
-            child: Center(child: Text('はい', style: TextStyle(fontSize: 16.sp))),
+            child: const Center(child: Text('はい')),
           ),
         ],
       );

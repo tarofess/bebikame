@@ -25,10 +25,7 @@ Future<bool> showConfirmationDialog({
                     ),
                   ),
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text(
-                    'いいえ',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  child: const Text('いいえ'),
                 ),
               ),
               const SizedBox(width: 8),
@@ -42,10 +39,7 @@ Future<bool> showConfirmationDialog({
                     ),
                   ),
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text(
-                    'はい',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  child: const Text('はい'),
                 ),
               ),
             ],

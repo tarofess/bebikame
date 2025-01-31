@@ -70,7 +70,6 @@ class LoadingIndicatorState extends State<LoadingIndicator> {
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.white,
                             decoration: TextDecoration.none,
-                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
@@ -82,7 +81,6 @@ class LoadingIndicatorState extends State<LoadingIndicator> {
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.white,
                             decoration: TextDecoration.none,
-                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
