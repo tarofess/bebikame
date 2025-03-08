@@ -140,8 +140,8 @@ app.*.symbols
 !.vscode/settings.json
 
 # .env
-/lib/config/env/.env
-/lib/config/env/env.g.dart
+/lib/env/.env
+/lib/env/env.g.dart
 
 # Firebase related
 firebase.json
